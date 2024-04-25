@@ -32,11 +32,11 @@ class Welcome extends StatelessWidget {
             SizedBox(height: 10,),
             ElevatedButton(
               onPressed: () {
-                // Add your onPressed logic here
+                Navigator.pushNamed(context, '/scan');
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Adjust the value as needed
+                  borderRadius: BorderRadius.circular(8.0), // Adjust the value as needed
                 ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
               ),
               child: const Text('Connect Device',

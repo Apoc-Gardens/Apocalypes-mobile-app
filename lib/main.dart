@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
+import 'package:mybluetoothapp/pages/landing_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: Welcome(),
     );
   }
 }

@@ -31,9 +31,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
-      // Add your logic to handle the connection
     } catch (e) {
       print('Error connecting to device: $e');
+    }
+    if(device.isConnected){
+       print('<========= Device is connected ======>');
     }
   }
 
@@ -48,13 +50,21 @@ class _MyHomePageState extends State<MyHomePage> {
         itemBuilder: (context, index) {
           ScanResult device = devicesList[index];
           return ListTile(
-            title: Text(device.device.platformName ?? 'Unknown device'),
+            title: Text(device.device.platformName),
             subtitle: Text(device.device.remoteId.toString()),
-            trailing: ElevatedButton(
+            trailing: OutlinedButton(
               onPressed: () {
+                // Add your onPressed logic here
                 connectToDevice(device.device);
               },
-              child: const Text('Connect'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Color(0xFF0AA061), side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Border radius
+                ),
+                padding: EdgeInsets.all(6.0), // Padding
+              ),
+              child: Text('Connect'),
             ),
           );
         },

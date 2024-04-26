@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/pages/landing_page.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
 import 'package:mybluetoothapp/pages/sensors.dart';
+import 'package:mybluetoothapp/pages/characteristics.dart';
 
 void main() => runApp(MyApp());
 

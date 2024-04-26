@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:mybluetoothapp/pages/characteristics.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -36,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if(device.isConnected){
        print('<========= Device is connected ======>');
+       print('Redirecting to charateristic view page');
     }
   }
 

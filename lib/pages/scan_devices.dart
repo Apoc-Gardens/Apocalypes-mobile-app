@@ -37,9 +37,32 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if(device.isConnected){
        print('<========= Device is connected ======>');
-       print('Redirecting to charateristic view page');
+       print('Redirecting to characteristic view page');
+       getServices(device);
     }
   }
+
+  Future<List<BluetoothService>> scanServices(BluetoothDevice device) async {
+    try {
+      List<BluetoothService> services = await device.discoverServices();
+      return services;
+    } catch (e) {
+      print('Error discovering services: $e');
+      return [];
+    }
+  }
+
+  void getServices(BluetoothDevice device) async {
+    List<BluetoothService> services = await scanServices(device);
+    for (BluetoothService service in services) {
+      print('Service found: ${service.uuid}');
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        print('Characteristic found: ${characteristic.uuid}');
+        // Add your logic for handling characteristics here
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

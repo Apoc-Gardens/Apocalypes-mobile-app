@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:mybluetoothapp/pages/characteristics.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -37,8 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if(device.isConnected){
        print('<========= Device is connected ======>');
+       if (!(await checkServices(device))){
+         print('<========= Device is connected ======>');
+         Navigator.pushNamed(context, '/characteristics', arguments: device);
+       }else{
+          Navigator.pushNamed(context, '/characteristics', arguments: device);
+       }
        print('Redirecting to characteristic view page');
-       getServices(device);
     }
   }
 
@@ -52,15 +56,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void getServices(BluetoothDevice device) async {
+  Future<bool> checkServices(BluetoothDevice device) async {
     List<BluetoothService> services = await scanServices(device);
     for (BluetoothService service in services) {
       print('Service found: ${service.uuid}');
-      for (BluetoothCharacteristic characteristic in service.characteristics) {
-        print('Characteristic found: ${characteristic.uuid}');
-        // Add your logic for handling characteristics here
+      if(service.uuid == "4fafc201-1fb5-459e-8fcc-c5c9c331914b"){
+          return true;
       }
     }
+    return false;
   }
 
 

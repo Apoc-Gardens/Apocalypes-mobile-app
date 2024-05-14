@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mybluetoothapp/widgets/Sync_card.dart';
 import 'package:mybluetoothapp/widgets/sensor_card.dart';
 
 class Sensors extends StatefulWidget {
@@ -43,6 +44,7 @@ class _SensorsState extends State<Sensors> {
                 ],
             ),
             SensorCard(),
+            SyncCard()
           ],
         ),
       ),

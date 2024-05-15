@@ -4,6 +4,7 @@ import 'package:mybluetoothapp/pages/landing_page.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
 import 'package:mybluetoothapp/pages/sensors.dart';
 import 'package:mybluetoothapp/providers/bluetooth_provider.dart';
+import 'package:mybluetoothapp/test/dbpage.dart';
 import 'package:provider/provider.dart';
 import 'package:mybluetoothapp/pages/characteristics.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         initialRoute: '/',
         routes: {
-          '/': (context) => Welcome(),
+          '/': (context) => dbpage(),
           '/scan': (context) => MyHomePage(),
           '/sensors': (context) => Sensors(),
           '/characteristics': (context) => CharacteristicViewer(connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),

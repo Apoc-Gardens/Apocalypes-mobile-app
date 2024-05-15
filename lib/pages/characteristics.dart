@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-
 import 'characteristic_value.dart';
 import 'characteristic_value_list.dart';
 
@@ -33,14 +32,19 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
     try {
       String property = characteristic.uuid.toString();
       List<String> sensordata = [];
+      List<String> elements = []; //
 
       if(property == "870e104f-ba63-4de3-a3ac-106969eac292"){
         String asciiString = asciiValues(await characteristic.read());
         print(asciiString);
-
-        while(asciiString != "end"){
-          asciiString = asciiValues(await characteristic.read());
-          sensordata.add(asciiString);
+        if(asciiString == "ok"){
+          while(asciiString != "end"){
+            asciiString = asciiValues(await characteristic.read());
+            elements = asciiString.split(",");
+            sensordata.add(asciiString);
+          }
+        }else{
+          sensordata.add("cannot read data file");
         }
 
         Navigator.push(

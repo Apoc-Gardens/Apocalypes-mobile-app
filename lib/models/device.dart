@@ -1,17 +1,19 @@
 // models/device.dart
 class Device {
-  final int id;
+  final int? id;
   final String name;
-  final DateTime lastSynced;
+  final String mac;
+  final int? lastSynced;
 
-  Device({required this.id, required this.name, required this.lastSynced});
+  Device({required this.id, required this.name, required this.mac,required this.lastSynced});
 
   // Convert a Device into a Map. The keys must correspond to the column names in the database.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'lastsynced': lastSynced.toIso8601String(),
+      //'lastsynced': lastSynced.toIso8601String(),
+      'lastsynced': lastSynced,
     };
   }
 
@@ -20,7 +22,8 @@ class Device {
     return Device(
       id: map['id'],
       name: map['name'],
-      lastSynced: DateTime.parse(map['lastsynced']),
+      mac: map['mac'],
+      lastSynced: map['lastsynced'],
     );
   }
 }

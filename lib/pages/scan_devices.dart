@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import '../services/database_service.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<ScanResult> devicesList = [];
+  DatabaseHelper databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -25,7 +27,13 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     });
-    FlutterBluePlus.startScan();
+    FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
+  }
+
+  Future<void> insertDevice(BluetoothDevice device) async {
+    int response = await databaseHelper.insertDevice(null, device.platformName, device.remoteId.toString(),null);
+    print("db response");
+    print(response);
   }
 
   void connectToDevice(BluetoothDevice device) async {
@@ -35,13 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Error connecting to device: $e');
     }
     if(device.isConnected){
-       print('<========= Device is connected ======>');
-       if (!(await checkServices(device))){
-         print('<========= Device is connected ======>');
-         Navigator.pushNamed(context, '/characteristics', arguments: device);
-       }else{
-          Navigator.pushNamed(context, '/characteristics', arguments: device);
-       }
+       print(device.remoteId.toString());
+       insertDevice(device);
+       Navigator.pushNamed(context, '/characteristics', arguments: device);
        print('Redirecting to characteristic view page');
     }
   }
@@ -56,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //this function can be removed in the future
   Future<bool> checkServices(BluetoothDevice device) async {
     List<BluetoothService> services = await scanServices(device);
     for (BluetoothService service in services) {
@@ -93,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 padding: EdgeInsets.all(6.0), // Padding
               ),
-              child: Text('Connect'),
+              child: Text('Connect and save'),
             ),
           );
         },

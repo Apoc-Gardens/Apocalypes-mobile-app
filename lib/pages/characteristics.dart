@@ -33,6 +33,7 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
       String property = characteristic.uuid.toString();
       List<String> sensordata = [];
       List<String> elements = []; //
+      List<List<String>> listofelements = [];
 
       if(property == "870e104f-ba63-4de3-a3ac-106969eac292"){
         String asciiString = asciiValues(await characteristic.read());
@@ -40,8 +41,15 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
         if(asciiString == "ok"){
           while(asciiString != "end"){
             asciiString = asciiValues(await characteristic.read());
-            elements = asciiString.split(",");
-            sensordata.add(asciiString);
+            if (asciiString != "end") {
+              elements = asciiString.split(",");
+              listofelements.add(elements);
+              sensordata.add(asciiString);
+            }
+          }
+          
+          for (List<String> element in listofelements){
+            print("Id: ${element[0]}, temp: ${element[1]}, Humid: ${element[2]}, Lux: ${element[3]}");
           }
         }else{
           sensordata.add("cannot read data file");

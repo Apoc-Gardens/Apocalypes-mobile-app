@@ -4,18 +4,24 @@ import 'package:path/path.dart';
 
 import '../models/data.dart';
 import '../models/datatype.dart';
-import '../models/device.dart';
+import '../models/receiver.dart';
 import '../models/test_table.dart';
 
 class DatabaseHelper {
   static const _databaseName = "my_database.db";
   static const _databaseVersion = 1;
 
-  static const tableDevices = 'devices';
-  static const deviceId = 'id';
-  static const deviceName = 'name';
+  static const tableReceivers = 'receivers';
+  static const receiverTableId = 'id';
+  static const receiverName = 'name';
   static const macAddress = 'mac';
   static const deviceLastSynced = 'lastsynced';
+
+  static const tableSensorNodes = 'nodes';
+  static const nodeTableId = 'id';
+  static const nodeId = 'nid';
+  static const nodeName = 'name';
+  static const nodeDescription = 'description';
 
   static const tableDataTypes = 'datatypes';
   static const dataTypeId = 'id';
@@ -29,7 +35,7 @@ class DatabaseHelper {
 
   static const tableData = 'data';
   static const dataId = 'id';
-  static const dataDeviceId = 'device_id';
+  static const dataNodeId = 'node_id';
   static const dataDataTypeId = 'datatype_id';
   static const dataValue = 'value';
 
@@ -57,11 +63,20 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE $tableDevices (
-        $deviceId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $deviceName TEXT NOT NULL,
+      CREATE TABLE $tableReceivers (
+        $receiverTableId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $receiverName TEXT NOT NULL,
         $deviceLastSynced DATETIME,
         $macAddress TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE $tableSensorNodes (
+        $nodeTableId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $nodeId TEXT NOT NULL,
+        $nodeName TEXT NOT NULL,
+        $nodeDescription TEXT
       )
     ''');
 
@@ -84,10 +99,10 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $tableData (
         $dataId INTEGER PRIMARY KEY,
-        $dataDeviceId INTEGER NOT NULL,
+        $dataNodeId INTEGER NOT NULL,
         $dataDataTypeId INTEGER NOT NULL,
         $dataValue REAL,
-        FOREIGN KEY ($dataDeviceId) REFERENCES $tableDevices ($deviceId) ON DELETE CASCADE,
+        FOREIGN KEY ($dataNodeId) REFERENCES $tableSensorNodes ($nodeTableId) ON DELETE CASCADE,
         FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE
       )
     ''');
@@ -100,26 +115,26 @@ class DatabaseHelper {
     //await db.insert('devices', {'id': 1, 'name': 'WatchHose', 'mac':'sjsjjs', 'lastsynced':'1715838753' });
   }
 
-// Implement methods for CRUD operations here
+  // Implement methods for CRUD operations here
   Future<int> insertData(int deviceId, int dataTypeId, double value) async {
     Database db = await instance.database;
     return await db.insert(tableData, {
-      dataDeviceId: deviceId,
+      dataNodeId: deviceId,
       dataDataTypeId: dataTypeId,
       dataValue: value,
     });
   }
 
-  Future<int> insertDevice(int? id, String name, String mac, String? lastsynced) async {
+  Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
     Database db = await instance.database;
-    return await db.insert('devices', {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert('receivers', {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
-  Future<List<Device>> getAllDevices() async {
+  Future<List<Receiver>> getAllDevices() async {
     Database db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db.query('devices');
+    final List<Map<String, dynamic>> maps = await db.query('receivers');
     return List.generate(maps.length, (i) {
-      return Device.fromMap(maps[i]);
+      return Receiver.fromMap(maps[i]);
     });
   }
 

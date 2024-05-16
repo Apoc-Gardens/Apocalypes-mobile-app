@@ -1,11 +1,11 @@
-// models/device.dart
-class Device {
+// models/receiver.dart
+class Receiver {
   final int? id;
   final String name;
   final String mac;
   final int? lastSynced;
 
-  Device({required this.id, required this.name, required this.mac,required this.lastSynced});
+  Receiver({required this.id, required this.name, required this.mac,required this.lastSynced});
 
   // Convert a Device into a Map. The keys must correspond to the column names in the database.
   Map<String, dynamic> toMap() {
@@ -18,8 +18,8 @@ class Device {
   }
 
   // Convert a Map into a Device. The keys must correspond to the column names in the database.
-  factory Device.fromMap(Map<String, dynamic> map) {
-    return Device(
+  factory Receiver.fromMap(Map<String, dynamic> map) {
+    return Receiver(
       id: map['id'],
       name: map['name'],
       mac: map['mac'],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/models/device.dart';
+import 'package:mybluetoothapp/models/receiver.dart';
 import '../models/datatype.dart';
 import '../models/test_table.dart';
 import '../services/database_service.dart';
@@ -49,7 +49,7 @@ class _dbpageState extends State<dbpage> {
   }
 
   Future<void> readDevices() async {
-    List<Device> devices = await databaseHelper.getAllDevices();
+    List<Receiver> devices = await databaseHelper.getAllDevices();
     for (var device in devices) {
       print('ID: ${device.id}, Name: ${device.name}, MAC: ${device.mac}, LastSync: ${device.lastSynced}');
     }

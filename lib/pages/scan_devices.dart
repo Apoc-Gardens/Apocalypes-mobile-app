@@ -30,8 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
     FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
   }
 
-  Future<void> insertDevice(BluetoothDevice device) async {
-    int response = await databaseHelper.insertDevice(null, device.platformName, device.remoteId.toString(),null);
+  Future<void> insertReceiverDevice(BluetoothDevice device) async {
+    int response = await databaseHelper.insertReceiverDevice(null, device.platformName, device.remoteId.toString(),null);
     print("db response");
     print(response);
   }
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if(device.isConnected){
        print(device.remoteId.toString());
-       insertDevice(device);
+       insertReceiverDevice(device);
        Navigator.pushNamed(context, '/characteristics', arguments: device);
        print('Redirecting to characteristic view page');
     }
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<BluetoothService> services = await scanServices(device);
     for (BluetoothService service in services) {
       print('Service found: ${service.uuid}');
-      if(service.uuid == "4fafc201-1fb5-459e-8fcc-c5c9c331914b"){
+      if(service.uuid.toString() == "4fafc201-1fb5-459e-8fcc-c5c9c331914b"){
           return true;
       }
     }

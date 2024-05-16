@@ -3,6 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../models/data.dart';
+import '../models/datatype.dart';
+import '../models/device.dart';
 import '../models/test_table.dart';
 
 class DatabaseHelper {
@@ -12,6 +14,7 @@ class DatabaseHelper {
   static const tableDevices = 'devices';
   static const deviceId = 'id';
   static const deviceName = 'name';
+  static const macAddress = 'mac';
   static const deviceLastSynced = 'lastsynced';
 
   static const tableDataTypes = 'datatypes';
@@ -55,9 +58,10 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $tableDevices (
-        $deviceId INTEGER PRIMARY KEY,
+        $deviceId INTEGER PRIMARY KEY AUTOINCREMENT,
         $deviceName TEXT NOT NULL,
-        $deviceLastSynced DATETIME
+        $deviceLastSynced DATETIME,
+        $macAddress TEXT
       )
     ''');
 
@@ -87,6 +91,13 @@ class DatabaseHelper {
         FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE
       )
     ''');
+
+    // Insert initial data into datatypes table
+    await db.insert('datatypes', {'id': 1, 'name': 'Temperature', 'unit': 'C'});
+    await db.insert('datatypes', {'id': 2, 'name': 'Humidity', 'unit': '%'});
+    await db.insert('datatypes', {'id': 3, 'name': 'Light intensity', 'unit': 'Lux'});
+    await db.insert('datatypes', {'id': 4, 'name': 'Soil moisture', 'unit': '%'});
+    //await db.insert('devices', {'id': 1, 'name': 'WatchHose', 'mac':'sjsjjs', 'lastsynced':'1715838753' });
   }
 
 // Implement methods for CRUD operations here
@@ -96,6 +107,35 @@ class DatabaseHelper {
       dataDeviceId: deviceId,
       dataDataTypeId: dataTypeId,
       dataValue: value,
+    });
+  }
+
+  Future<int> insertDevice(int? id, String name, String mac, String? lastsynced) async {
+    Database db = await instance.database;
+    return await db.insert('devices', {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<List<Device>> getAllDevices() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('devices');
+    return List.generate(maps.length, (i) {
+      return Device.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<DataType>> getAllDataTypes() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('datatypes');
+    return List.generate(maps.length, (i) {
+      return DataType.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Data>> getAllData() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('data');
+    return List.generate(maps.length, (i) {
+      return Data.fromMap(maps[i]);
     });
   }
 

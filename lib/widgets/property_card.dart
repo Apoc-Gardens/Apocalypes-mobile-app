@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class Chart extends StatefulWidget {
-  const Chart({super.key});
+class PropertyCard extends StatefulWidget {
+  const PropertyCard({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _ChartState createState() => _ChartState();
+  _PropertyCardState createState() => _PropertyCardState();
 }
 
-class _ChartState extends State<Chart> {
+class _PropertyCardState extends State<PropertyCard> {
   List<Color> gradientColors = [
     const Color.fromARGB(255, 202, 29, 29),
     const Color.fromARGB(255, 200, 131, 82),
@@ -53,36 +53,50 @@ class _ChartState extends State<Chart> {
     return Card.outlined(
         color: Colors.white,
         child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(
+              20.0,
+            ),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(heading,
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                Text(informationBody, style: const TextStyle(fontSize: 14)),
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 5),
+                Text(informationBody, style: const TextStyle(fontSize: 12)),
+                const Divider(
+                  height: 30,
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
                 AspectRatio(
-                  aspectRatio: 1.70,
-                  child: LineChart(mainData()),
+                  aspectRatio: 4,
+                  child: LineChart(graphData()),
                 ),
               ],
             )));
   }
 
-  LineChartData mainData() {
+  LineChartData graphData() {
     return LineChartData(
       gridData: const FlGridData(
         show: false,
       ),
-      lineTouchData: const LineTouchData(enabled: true),
+      lineTouchData: const LineTouchData(
+        enabled: true,
+        touchTooltipData: LineTouchTooltipData(
+          
+        ),
+        ),
       titlesData: const FlTitlesData(show: false),
       borderData: FlBorderData(
         show: false,
       ),
       minX: 0,
       maxX: 24,
-      minY: 0,
-      maxY: 8,
+      minY: 2.5,
+      maxY: 6,
       lineBarsData: [
         LineChartBarData(
           spots: dataSpots,
@@ -93,10 +107,10 @@ class _ChartState extends State<Chart> {
           barWidth: 4,
           isStrokeCapRound: true,
           dotData: const FlDotData(
-            show: true,
+            show: false,
           ),
           belowBarData: BarAreaData(
-            show: true,
+            show: false,
             gradient: LinearGradient(
               colors: gradientColors
                   .map((color) => color.withOpacity(0.1))

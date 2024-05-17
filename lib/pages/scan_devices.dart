@@ -38,15 +38,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void connectToDevice(BluetoothDevice device) async {
     try {
+      //connect to the device just to check is it is working
       await device.connect();
+      if(device.isConnected){
+        print(device.remoteId.toString());
+        insertReceiverDevice(device);
+        device.disconnect();
+
+        Navigator.pushNamed(context, '/sensors');
+        print('Redirecting to sensors page');
+
+        //Navigator.pushNamed(context, '/characteristics', arguments: device);
+        //print('Redirecting to characteristic view page');
+      }
     } catch (e) {
       print('Error connecting to device: $e');
-    }
-    if(device.isConnected){
-       print(device.remoteId.toString());
-       insertReceiverDevice(device);
-       Navigator.pushNamed(context, '/characteristics', arguments: device);
-       print('Redirecting to characteristic view page');
     }
   }
 

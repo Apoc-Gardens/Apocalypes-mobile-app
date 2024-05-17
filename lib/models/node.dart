@@ -1,9 +1,9 @@
 // models/node.dart
 class Node {
-  final int id;
+  final int? id;
   final String nid;
   final String name;
-  final String description;
+  final String? description;
 
   Node({
     required this.id,

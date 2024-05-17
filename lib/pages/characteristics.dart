@@ -21,6 +21,10 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
     _discoverCharacteristics();
   }
 
+  void _saveData(){
+
+  }
+
   void _readCharacteristic(BluetoothCharacteristic characteristic) async {
 
     String asciiValues(List<int> value){
@@ -47,9 +51,10 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
               sensordata.add(asciiString);
             }
           }
-          
+          print("data to be saved");
           for (List<String> element in listofelements){
-            print("Id: ${element[0]}, temp: ${element[1]}, Humid: ${element[2]}, Lux: ${element[3]}");
+            print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
+
           }
         }else{
           sensordata.add("cannot read data file");
@@ -80,9 +85,9 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
     List<BluetoothService> services = await widget.connectedDevice.discoverServices();
     List<BluetoothCharacteristic> characteristics = [];
 
-    services.forEach((service) {
+    for (var service in services) {
       characteristics.addAll(service.characteristics);
-    });
+    }
 
     setState(() {
       _characteristics = characteristics;
@@ -108,7 +113,7 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
                   _readCharacteristic(characteristic);
                   print("pressed on characteristic read");
                 },
-              child: Text('Read'),
+              child: const Text('Read'),
             )
                 : null,
             onTap: () {

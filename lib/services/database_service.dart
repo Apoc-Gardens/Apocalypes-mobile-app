@@ -1,3 +1,4 @@
+import 'package:mybluetoothapp/models/node.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:path/path.dart';
@@ -67,7 +68,7 @@ class DatabaseHelper {
         $receiverTableId INTEGER PRIMARY KEY AUTOINCREMENT,
         $receiverName TEXT NOT NULL,
         $deviceLastSynced DATETIME,
-        $macAddress TEXT
+        $macAddress TEXT UNIQUE
       )
     ''');
 
@@ -98,7 +99,7 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE $tableData (
-        $dataId INTEGER PRIMARY KEY,
+        $dataId INTEGER PRIMARY KEY AUTOINCREMENT,
         $dataNodeId INTEGER NOT NULL,
         $dataDataTypeId INTEGER NOT NULL,
         $dataValue REAL,
@@ -112,22 +113,25 @@ class DatabaseHelper {
     await db.insert('datatypes', {'id': 2, 'name': 'Humidity', 'unit': '%'});
     await db.insert('datatypes', {'id': 3, 'name': 'Light intensity', 'unit': 'Lux'});
     await db.insert('datatypes', {'id': 4, 'name': 'Soil moisture', 'unit': '%'});
-    //await db.insert('devices', {'id': 1, 'name': 'WatchHose', 'mac':'sjsjjs', 'lastsynced':'1715838753' });
+    await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 
   // Implement methods for CRUD operations here
-  Future<int> insertData(int deviceId, int dataTypeId, double value) async {
-    Database db = await instance.database;
-    return await db.insert(tableData, {
-      dataNodeId: deviceId,
-      dataDataTypeId: dataTypeId,
-      dataValue: value,
-    });
-  }
 
+  //CRUD for devices
   Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
     Database db = await instance.database;
-    return await db.insert('receivers', {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert(tableReceivers, {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int?> getReceiverCount() async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableReceivers'));
+  }
+
+  Future<void> insertNode(Node node) async {
+    Database db = await instance.database;
+    await db.insert(tableSensorNodes, node.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<Receiver>> getAllDevices() async {
@@ -135,6 +139,33 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('receivers');
     return List.generate(maps.length, (i) {
       return Receiver.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Node>> getAllNodes() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('nodes');
+    return List.generate(maps.length, (i) {
+      return Node.fromMap(maps[i]);
+    });
+  }
+
+  Future<Map<String, int>> getNodeMap() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('nodes');
+    final Map<String, int> nodeMap = {};
+    for (Map<String,dynamic> map in maps) {
+      nodeMap[map[nodeId]] = map[nodeTableId];
+    }
+    return nodeMap;
+  }
+
+  Future<int> insertData(int nodeId, int dataTypeId, double value) async {
+    Database db = await instance.database;
+    return await db.insert(tableData, {
+      dataNodeId: nodeId,
+      dataDataTypeId: dataTypeId,
+      dataValue: value,
     });
   }
 

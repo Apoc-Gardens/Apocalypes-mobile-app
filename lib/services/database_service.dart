@@ -113,7 +113,7 @@ class DatabaseHelper {
     await db.insert('datatypes', {'id': 2, 'name': 'Humidity', 'unit': '%'});
     await db.insert('datatypes', {'id': 3, 'name': 'Light intensity', 'unit': 'Lux'});
     await db.insert('datatypes', {'id': 4, 'name': 'Soil moisture', 'unit': '%'});
-    await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
+    //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 
   // Implement methods for CRUD operations here

@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(device.remoteId.toString());
         insertReceiverDevice(device);
         device.disconnect();
-
+        //ToDo: put a toast saying "saved"
         Navigator.pushNamed(context, '/sensors');
         print('Redirecting to sensors page');
 

@@ -14,6 +14,7 @@ class _SyncCardState extends State<SyncCard> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   late Receiver receiverDevice;
   late BluetoothDevice bluetoothDevice;
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -36,6 +37,9 @@ class _SyncCardState extends State<SyncCard> {
           bluetoothDevice = result.device;
           setState(() async {
             await bluetoothDevice.connect();
+            setState(() {
+              isConnected = true;
+            });
             print("Devices connected");
           });
         }
@@ -102,7 +106,6 @@ class _SyncCardState extends State<SyncCard> {
           print("data to be saved");
           for (List<String> element in listofelements){
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
-
           }
         }else{
           print("cannot read data file"); //ToDo: add a toast here to inform user
@@ -111,6 +114,9 @@ class _SyncCardState extends State<SyncCard> {
         print("error"); //ToDo: add a toast here to inform user
       }
     }else{
+      setState(() {
+        isConnected = false;
+      });
       scanForDevice(receiverDevice.mac); //print if connected
     }
   }
@@ -134,38 +140,72 @@ class _SyncCardState extends State<SyncCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Text('Receiver',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                      ),
-                    ),
-                    Text('last sync 6 min ago',
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Receiver',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            if (isConnected)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Icon(
+                                  Icons.circle,
+                                  color: Colors.green,
+                                  size: 10,
+                                ),
+                              )
+                            else
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Icon(
+                                  Icons.circle,
+                                  color: Colors.red,
+                                  size: 10,
+                                ),
+                              )
+                          ],
+                        ),
+                        const Text(
+                          'last sync 6 min ago',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 OutlinedButton(
                   onPressed: () {
-                    // Add your onPressed logic here
-                    syncData(bluetoothDevice);
+                    if (isConnected) {
+                      // if connected
+                      syncData(bluetoothDevice);
+                    } else {
+                      // if not connected
+                        scanForDevice(receiverDevice.mac);
+                    }
                   },
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Color(0xFF0AA061), side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                    foregroundColor: const Color(0xFF0AA061),
+                    side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0), // Border radius
                     ),
-                    padding: EdgeInsets.all(6.0), // Padding
+                    padding: const EdgeInsets.all(6.0), // Padding
                   ),
-                  child: Text('Sync Data'),
+                  child: Text(isConnected ? 'Sync Data' : 'Connect'),
                 ),
               ],
             ),

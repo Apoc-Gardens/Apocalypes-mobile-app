@@ -65,10 +65,16 @@ class _dbpageState extends State<dbpage> {
     print(sensors);
   }
 
+  Future<void> readSpecificNodes() async {
+   List<Map<String,dynamic>> nodeid =  await databaseHelper.getNodeById("N001");
+   print(nodeid[0]["id"]);
+  }
+
   Future<void> readMapNode() async{
     // Insert a sample node (if not already inserted)
     Node node = Node(id: null, nid: 'N001', name: 'Node 1', description: 'Description for Node 1');
-    await databaseHelper.insertNode(node);
+    print("inserted:");
+    print(await databaseHelper.insertNode(node));
 
     // Retrieve and print the node map
     Map<String, int> nodeMap = await databaseHelper.getNodeMap();
@@ -157,6 +163,7 @@ class _dbpageState extends State<dbpage> {
           ElevatedButton(
             onPressed: () {
               readMapNode();
+              readAllnodes();
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -164,6 +171,25 @@ class _dbpageState extends State<dbpage> {
               ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
             ),
             child: const Text('Read map node',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          ElevatedButton(
+            onPressed: () {
+              readSpecificNodes();
+              //readAllnodes();
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Adjust the value as needed
+              ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
+            ),
+            child: const Text('Read specififc node',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

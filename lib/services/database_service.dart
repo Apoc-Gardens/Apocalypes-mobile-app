@@ -39,6 +39,7 @@ class DatabaseHelper {
   static const dataNodeId = 'node_id';
   static const dataDataTypeId = 'datatype_id';
   static const dataValue = 'value';
+  static const dataTimeStamp = 'timestamp';
 
   factory DatabaseHelper() {
     return instance;
@@ -75,7 +76,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $tableSensorNodes (
         $nodeTableId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $nodeId TEXT NOT NULL,
+        $nodeId TEXT NOT NULL UNIQUE,
         $nodeName TEXT NOT NULL,
         $nodeDescription TEXT
       )
@@ -103,6 +104,7 @@ class DatabaseHelper {
         $dataNodeId INTEGER NOT NULL,
         $dataDataTypeId INTEGER NOT NULL,
         $dataValue REAL,
+        $dataTimeStamp INTEGER,
         FOREIGN KEY ($dataNodeId) REFERENCES $tableSensorNodes ($nodeTableId) ON DELETE CASCADE,
         FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE
       )
@@ -129,9 +131,19 @@ class DatabaseHelper {
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableReceivers'));
   }
 
-  Future<void> insertNode(Node node) async {
+  Future<int> insertNode(Node node) async {
     Database db = await instance.database;
-    await db.insert(tableSensorNodes, node.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert(tableSensorNodes, node.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int?> getNodeCount() async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableSensorNodes'));
+  }
+
+  Future<List<Map<String, dynamic>>> getNodeById(String nid) async {
+    Database db = await instance.database;
+    return await db.rawQuery('SELECT $nodeTableId FROM $tableSensorNodes WHERE $nodeId = ?',[nid]);
   }
 
   Future<List<Receiver>> getAllDevices() async {
@@ -160,12 +172,13 @@ class DatabaseHelper {
     return nodeMap;
   }
 
-  Future<int> insertData(int nodeId, int dataTypeId, double value) async {
+  Future<int> insertData(int nodeId, int dataTypeId, double value, int timestamp) async {
     Database db = await instance.database;
     return await db.insert(tableData, {
       dataNodeId: nodeId,
       dataDataTypeId: dataTypeId,
       dataValue: value,
+      dataTimeStamp: timestamp
     });
   }
 
@@ -186,12 +199,9 @@ class DatabaseHelper {
   }
 
   Future<void> insertMultipleData(List<Data> dataList) async {
+    //not complete
     Database db = await instance.database;
-    await db.transaction((txn) async {
-      for (var data in dataList) {
-        await txn.insert(tableData, data.toMap());
-      }
-    });
+    await db.rawQuery('INSERT INTO $tableData VALUES ($dataNodeId,$dataDataTypeId,$dataValue,$dataTimeStamp) ');
   }
 
   Future<int> insertTestData(int deviceId, String name, String description) async {

@@ -1,7 +1,7 @@
 // models/node.dart
 class Node {
   final int? id;
-  final String nid;
+  late final String nid;
   final String name;
   final String? description;
 

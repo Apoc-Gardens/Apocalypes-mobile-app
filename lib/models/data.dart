@@ -1,29 +1,36 @@
 // models/data.dart
 class Data {
-  final int id;
-  final int deviceId;
+  final int? id;
+  final int nodeId;
   final int dataTypeId;
   final double value;
+  final int timestamp;
 
-  Data({required this.id, required this.deviceId, required this.dataTypeId, required this.value});
+  Data({
+    this.id,
+    required this.nodeId,
+    required this.dataTypeId,
+    required this.value,
+    required this.timestamp,
+  });
 
-  // Convert a Data into a Map. The keys must correspond to the column names in the database.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'device_id': deviceId,
+      'node_id': nodeId,
       'datatype_id': dataTypeId,
       'value': value,
+      'timestamp': timestamp,
     };
   }
 
-  // Convert a Map into a Data. The keys must correspond to the column names in the database.
   factory Data.fromMap(Map<String, dynamic> map) {
     return Data(
       id: map['id'],
-      deviceId: map['device_id'],
+      nodeId: map['node_id'],
       dataTypeId: map['datatype_id'],
       value: map['value'],
+      timestamp: map['timestamp'],
     );
   }
 }

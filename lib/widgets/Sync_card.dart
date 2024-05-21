@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../models/receiver.dart';
 import '../services/database_service.dart';
+import 'package:mybluetoothapp/models/node.dart';
 
 class SyncCard extends StatefulWidget {
   const SyncCard({super.key});
@@ -72,6 +73,7 @@ class _SyncCardState extends State<SyncCard> {
     List<List<String>> listofelements = [];
     List<BluetoothService> services = await bluetoothDevice.discoverServices();
     BluetoothCharacteristic? selectedCharacteristic;
+    List<Map<String, dynamic>> nodeToBeInserted;
 
     String asciiValues(List<int> value){
       String hexString = value.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ');
@@ -106,7 +108,21 @@ class _SyncCardState extends State<SyncCard> {
           print("data to be saved");
           for (List<String> element in listofelements){
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
+            nodeToBeInserted = databaseHelper.getNodeById(element[0]) as List<Map<String, dynamic>>;
+            //check is sensor node exists in database
+            if(nodeToBeInserted.isEmpty){
+              Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null);
+              nodeToBeInserted[0]["id"] = await databaseHelper.insertNode(newNode);
+              print("saving new node");
+            }
+            //insert the values relevant to the node
+            databaseHelper.insertData(nodeToBeInserted[0]["id"], 1, element[2] as double, DateTime.now().millisecondsSinceEpoch);
+            databaseHelper.insertData(nodeToBeInserted[0]["id"], 2, element[3] as double, DateTime.now().millisecondsSinceEpoch);
+            databaseHelper.insertData(nodeToBeInserted[0]["id"], 3, element[4] as double, DateTime.now().millisecondsSinceEpoch);
+            databaseHelper.insertData(nodeToBeInserted[0]["id"], 4, element[5] as double, DateTime.now().millisecondsSinceEpoch);
+            print("data inserted");
           }
+
         }else{
           print("cannot read data file"); //ToDo: add a toast here to inform user
         }

@@ -73,7 +73,6 @@ class _SyncCardState extends State<SyncCard> {
     List<List<String>> listofelements = [];
     List<BluetoothService> services = await bluetoothDevice.discoverServices();
     BluetoothCharacteristic? selectedCharacteristic;
-    List<Map<String, dynamic>> nodeToBeInserted;
 
     String asciiValues(List<int> value){
       String hexString = value.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ');
@@ -106,20 +105,26 @@ class _SyncCardState extends State<SyncCard> {
             }
           }
           print("data to be saved");
-          for (List<String> element in listofelements){
+          for (List<String> element in listofelements) {
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
-            nodeToBeInserted = databaseHelper.getNodeById(element[0]) as List<Map<String, dynamic>>;
-            //check is sensor node exists in database
-            if(nodeToBeInserted.isEmpty){
+            List<Map<String, dynamic>> nodeToBeInserted = await databaseHelper.getNodeById(element[0]);
+            if (nodeToBeInserted.isEmpty) {
               Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null);
-              nodeToBeInserted[0]["id"] = await databaseHelper.insertNode(newNode);
+              int newNodeId = await databaseHelper.insertNode(newNode);
+              nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");
             }
-            //insert the values relevant to the node
-            databaseHelper.insertData(nodeToBeInserted[0]["id"], 1, element[2] as double, DateTime.now().millisecondsSinceEpoch);
-            databaseHelper.insertData(nodeToBeInserted[0]["id"], 2, element[3] as double, DateTime.now().millisecondsSinceEpoch);
-            databaseHelper.insertData(nodeToBeInserted[0]["id"], 3, element[4] as double, DateTime.now().millisecondsSinceEpoch);
-            databaseHelper.insertData(nodeToBeInserted[0]["id"], 4, element[5] as double, DateTime.now().millisecondsSinceEpoch);
+            int nodeId = nodeToBeInserted[0]['id'] as int;
+
+            double temp = double.tryParse(element[2]) ?? 0.0;
+            double hum = double.tryParse(element[3]) ?? 0.0;
+            double lux = double.tryParse(element[4]) ?? 0.0;
+            double soil = double.tryParse(element[5]) ?? 0.0;
+
+            await databaseHelper.insertData(nodeId, 1, temp, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);
             print("data inserted");
           }
 

@@ -86,7 +86,7 @@ class _PropertyCardState extends State<PropertyCard> {
       lineTouchData: const LineTouchData(
         enabled: true,
         touchTooltipData: LineTouchTooltipData(
-          
+            
         ),
         ),
       titlesData: const FlTitlesData(show: false),

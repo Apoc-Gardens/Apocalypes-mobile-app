@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/sensor_properties',
         routes: {
           '/': (context) => const Welcome(),
-          '/scan': (context) => MyHomePage(),
+          '/scan': (context) => const MyHomePage(),
           '/sensors': (context) => const Sensors(),
           '/characteristics': (context) => CharacteristicViewer(connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
           '/sensor_properties': (context) => const SensorPropertiesPage(),

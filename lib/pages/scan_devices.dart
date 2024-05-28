@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import '../services/database_service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -10,6 +11,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<ScanResult> devicesList = [];
+  DatabaseHelper databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -27,24 +29,32 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     });
-    FlutterBluePlus.startScan();
+    FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
+  }
+
+  Future<void> insertReceiverDevice(BluetoothDevice device) async {
+    int response = await databaseHelper.insertReceiverDevice(null, device.platformName, device.remoteId.toString(),null);
+    print("db response");
+    print(response);
   }
 
   void connectToDevice(BluetoothDevice device) async {
     try {
+      //connect to the device just to check is it is working
       await device.connect();
+      if(device.isConnected){
+        print(device.remoteId.toString());
+        insertReceiverDevice(device);
+        device.disconnect();
+        //ToDo: put a toast saying "saved"
+        Navigator.pushNamed(context, '/sensors');
+        print('Redirecting to sensors page');
+
+        //Navigator.pushNamed(context, '/characteristics', arguments: device);
+        //print('Redirecting to characteristic view page');
+      }
     } catch (e) {
       print('Error connecting to device: $e');
-    }
-    if(device.isConnected){
-       print('<========= Device is connected ======>');
-       if (!(await checkServices(device))){
-         print('<========= Device is connected ======>');
-         Navigator.pushNamed(context, '/characteristics', arguments: device);
-       }else{
-          Navigator.pushNamed(context, '/characteristics', arguments: device);
-       }
-       print('Redirecting to characteristic view page');
     }
   }
 
@@ -58,11 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //this function can be removed in the future
   Future<bool> checkServices(BluetoothDevice device) async {
     List<BluetoothService> services = await scanServices(device);
     for (BluetoothService service in services) {
       print('Service found: ${service.uuid}');
-      if(service.uuid == "4fafc201-1fb5-459e-8fcc-c5c9c331914b"){
+      if(service.uuid.toString() == "4fafc201-1fb5-459e-8fcc-c5c9c331914b"){
           return true;
       }
     }
@@ -95,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 padding: const EdgeInsets.all(6.0), // Padding
               ),
-              child: const Text('Connect'),
+              child: Text('Connect and save'),
             ),
           );
         },

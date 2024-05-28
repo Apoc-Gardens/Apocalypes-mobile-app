@@ -6,7 +6,7 @@ import 'characteristic_value_list.dart';
 class CharacteristicViewer extends StatefulWidget {
   final BluetoothDevice connectedDevice;
 
-  const CharacteristicViewer({required this.connectedDevice});
+  const CharacteristicViewer({super.key, required this.connectedDevice});
 
   @override
   _CharacteristicViewerState createState() => _CharacteristicViewerState();
@@ -72,9 +72,9 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
     List<BluetoothService> services = await widget.connectedDevice.discoverServices();
     List<BluetoothCharacteristic> characteristics = [];
 
-    services.forEach((service) {
+    for (var service in services) {
       characteristics.addAll(service.characteristics);
-    });
+    }
 
     setState(() {
       _characteristics = characteristics;
@@ -100,7 +100,7 @@ class _CharacteristicViewerState extends State<CharacteristicViewer> {
                   _readCharacteristic(characteristic);
                   print("pressed on characteristic read");
                 },
-              child: Text('Read'),
+              child: const Text('Read'),
             )
                 : null,
             onTap: () {

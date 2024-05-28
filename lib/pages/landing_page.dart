@@ -20,7 +20,7 @@ class Welcome extends StatelessWidget {
                 fontWeight: FontWeight.bold
               ),
             ),
-            SizedBox(height: 5,),
+            const SizedBox(height: 5,),
             const Text('Connect your recevier device to get started',
             style: TextStyle(
                 fontFamily: "Inter",
@@ -29,7 +29,7 @@ class Welcome extends StatelessWidget {
                 fontWeight: FontWeight.normal
               ),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/scan');
@@ -37,7 +37,7 @@ class Welcome extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0), // Adjust the value as needed
-                ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
+                ), backgroundColor: const Color(0xFF0AA061), // Use your desired color value
               ),
               child: const Text('Connect Device',
                 style: TextStyle(

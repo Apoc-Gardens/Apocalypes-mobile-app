@@ -33,18 +33,18 @@ class _SensorsState extends State<Sensors> {
                       // Add your onPressed logic here
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Color(0xFF0AA061), side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                      foregroundColor: const Color(0xFF0AA061), side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4.0), // Border radius
                       ),
-                      padding: EdgeInsets.all(6.0), // Padding
+                      padding: const EdgeInsets.all(6.0), // Padding
                     ),
-                    child: Text('Add sensor'),
+                    child: const Text('Add sensor'),
                   ),
                 ],
             ),
-            SensorCard(),
-            SyncCard()
+            const SensorCard(),
+            const SyncCard()
           ],
         ),
       ),

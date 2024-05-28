@@ -154,6 +154,10 @@ class DatabaseHelper {
     });
   }
 
+  Future<int> updateNodeDetails(String tableId, String name, String description) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeName = ?, $nodeDescription = ? WHERE $nodeTableId = ?', [name, description, tableId]);
+  }
 
   Future<List<Node>> getAllNodes() async {
     Database db = await instance.database;
@@ -202,6 +206,14 @@ class DatabaseHelper {
   Future<List<Data>> getLatestReadings(String nodeid) async {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? ORDER BY $dataTimeStamp DESC LIMIT 5',[nodeid]);
+    return List.generate(maps.length, (i) {
+      return Data.fromMap(maps[i]);
+    });
+  }
+
+  Future<List<Data>> getOldestReadings(String nodeid) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? ORDER BY $dataTimeStamp ASC LIMIT 5',[nodeid]);
     return List.generate(maps.length, (i) {
       return Data.fromMap(maps[i]);
     });

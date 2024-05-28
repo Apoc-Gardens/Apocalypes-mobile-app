@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/models/node.dart';
 import 'package:mybluetoothapp/pages/view_sensor.dart';
 import 'package:mybluetoothapp/services/database_service.dart';
+import 'package:intl/intl.dart';
 
 import '../models/data.dart';
 
@@ -17,7 +18,10 @@ class _SensorCardState extends State<SensorCard> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   int noOfData = 0;
   int latestTime = 0;
-  late List<Data> latestReadings;
+  late String temperature = '0';
+  late String humidity = '0';
+  late String lightIntensity = '0';
+  late String soilMoisture = '0';
 
   @override
   initState() {
@@ -41,20 +45,42 @@ class _SensorCardState extends State<SensorCard> {
   }
 
   Future<void> getLatestReadings() async{
-    latestReadings = await databaseHelper.getLatestReadings(widget.node.id.toString());
-    print(latestReadings);
+    List<Data> latestReadings = await databaseHelper.getLatestReadings(widget.node.id.toString());
+    for (Data reading in latestReadings){
+      switch(reading.dataTypeId) {
+        case 1: {
+          temperature = reading.value.toString();
+        }
+        break;
+
+        case 2: {
+          humidity = reading.value.toString();
+        }
+        break;
+
+        case 3: {
+          lightIntensity = reading.value.toString();
+        }
+        break;
+
+        case 4: {
+          soilMoisture = reading.value.toString();
+        }
+        break;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        /*Navigator.push(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ViewSensor(node: widget.node),
           ),
-        );*/
+        );
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -91,7 +117,7 @@ class _SensorCardState extends State<SensorCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Last Update'),
-                      Text(latestTime.toString())
+                      Text(DateFormat('dd-mm-yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(latestTime)))
                     ],
                   ),
                   SizedBox(width: 20,),
@@ -117,23 +143,23 @@ class _SensorCardState extends State<SensorCard> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Temperarure'),
-                      Text('30C')
+                      Text('Temp'),
+                      Text(temperature+'C')
                     ],
                   ),
                   SizedBox(width: 20,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Humidity'),
-                      Text('30%')
+                      Text('Humid'),
+                      Text(humidity+'%')
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('LUX'),
-                      Text('15467')
+                      Text(lightIntensity+'lux')
                     ],
                   ),
                   SizedBox(width: 20,),
@@ -141,7 +167,7 @@ class _SensorCardState extends State<SensorCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Soil'),
-                      Text('100%')
+                      Text(soilMoisture+'%')
                     ],
                   )
                 ],

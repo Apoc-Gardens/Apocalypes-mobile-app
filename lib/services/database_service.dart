@@ -211,14 +211,6 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Data>> getOldestReadings(String nodeid) async {
-    Database db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? ORDER BY $dataTimeStamp ASC LIMIT 5',[nodeid]);
-    return List.generate(maps.length, (i) {
-      return Data.fromMap(maps[i]);
-    });
-  }
-
   Future<int?> countData(String dataNid) async{
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
@@ -229,9 +221,14 @@ class DatabaseHelper {
     return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX($dataTimeStamp) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
   }
 
-  Future<List<Map<String, dynamic>>> getDataByNodeTime(String dataNid, int timeStamp) async{
+  Future<int?> oldestDataTimeStamp(String dataNid) async{
     Database db = await instance.database;
-    return await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? AND $dataTimeStamp = ?',[dataNid, timeStamp]);
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MIN($dataTimeStamp) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
+  }
+
+  Future<List<Map<String, dynamic>>> getDataByNodeTime(String dataNid, int startTime, int endTime) async{
+    Database db = await instance.database;
+    return await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? AND ($dataTimeStamp  BETWEEN ? AND ?)',[dataNid, startTime, endTime]);
   }
 
   Future<void> insertMultipleData(List<Data> dataList) async {

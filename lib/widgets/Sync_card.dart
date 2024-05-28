@@ -121,7 +121,7 @@ class _SyncCardState extends State<SyncCard> {
             double lux = double.tryParse(element[4]) ?? 0.0;
             double soil = double.tryParse(element[5]) ?? 0.0;
 
-            await databaseHelper.insertData(nodeId, 1, temp, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(nodeId, 1, temp, DateTime.now().millisecondsSinceEpoch); //ToDo: change this insert the timestamp received from the receiver module
             await databaseHelper.insertData(nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
             await databaseHelper.insertData(nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
             await databaseHelper.insertData(nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);

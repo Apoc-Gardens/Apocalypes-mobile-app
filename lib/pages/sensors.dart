@@ -43,6 +43,7 @@ class _SensorsState extends State<Sensors> {
                 OutlinedButton(
                   onPressed: () {
                     // Add your onPressed logic here
+                    Navigator.pushNamed(context, '/test');
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF0AA061),

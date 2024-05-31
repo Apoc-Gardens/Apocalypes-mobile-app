@@ -154,9 +154,19 @@ class DatabaseHelper {
     });
   }
 
-  Future<int> updateNodeDetails(String tableId, String name, String description) async{
+  Future<int> updateNodeName(String tableId, String name) async{
     Database db = await instance.database;
-    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeName = ?, $nodeDescription = ? WHERE $nodeTableId = ?', [name, description, tableId]);
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeName = ? WHERE $nodeTableId = ?', [name,tableId]);
+  }
+
+  Future<int> updateNodeDescription(String tableId, String description) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeDescription = ? WHERE $nodeTableId = ?', [description,tableId]);
+  }
+
+  Future<int> updateNodeDetails(String tableId, String field, String value) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET ? = ? WHERE $nodeTableId = ?', [field,value,tableId]);
   }
 
   Future<List<Node>> getAllNodes() async {

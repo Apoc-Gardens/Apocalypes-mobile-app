@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:intl/intl.dart';
 import '../models/receiver.dart';
 import '../services/database_service.dart';
 import 'package:mybluetoothapp/models/node.dart';
@@ -15,6 +16,7 @@ class _SyncCardState extends State<SyncCard> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   late Receiver receiverDevice;
   late BluetoothDevice bluetoothDevice;
+  int lastSync = 0;
   bool isConnected = false;
 
   @override
@@ -26,6 +28,7 @@ class _SyncCardState extends State<SyncCard> {
   Future<void> getDevices() async {
     List<Receiver> devices = await databaseHelper.getAllDevices();
     receiverDevice = devices[0];
+    lastSync = receiverDevice.lastSynced!;
     print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
     scanForDevice(receiverDevice.mac);
   }
@@ -125,6 +128,10 @@ class _SyncCardState extends State<SyncCard> {
             await databaseHelper.insertData(nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
             await databaseHelper.insertData(nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
             await databaseHelper.insertData(nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.updateLastSync(receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
+            setState(() {
+              lastSync = DateTime.now().millisecondsSinceEpoch;
+            });
             print("data inserted");
           }
 
@@ -196,8 +203,8 @@ class _SyncCardState extends State<SyncCard> {
                               )
                           ],
                         ),
-                        const Text(
-                          'last sync 6 min ago',
+                        Text(
+                          'last sync: ${DateFormat('HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(lastSync))}',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.normal,

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../services/database_service.dart';
 
-class MyHomePage extends StatefulWidget {
+class ScanDevices extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ScanDevicesState createState() => _ScanDevicesState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ScanDevicesState extends State<ScanDevices> {
   List<ScanResult> devicesList = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -77,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return false;
   }
-
 
   @override
   Widget build(BuildContext context) {

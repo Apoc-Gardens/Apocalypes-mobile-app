@@ -106,7 +106,8 @@ class DatabaseHelper {
         $dataValue REAL,
         $dataTimeStamp INTEGER,
         FOREIGN KEY ($dataNodeId) REFERENCES $tableSensorNodes ($nodeTableId) ON DELETE CASCADE,
-        FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE
+        FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE,
+        UNIQUE($dataNodeId, $dataDataTypeId, $dataValue, $dataTimeStamp)
       )
     ''');
 
@@ -124,6 +125,11 @@ class DatabaseHelper {
   Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
     Database db = await instance.database;
     return await db.insert(tableReceivers, {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> updateLastSync(int id, int timestamp) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableReceivers SET $deviceLastSynced = ? WHERE $nodeTableId = ?', [timestamp,id]);
   }
 
   Future<int?> getReceiverCount() async{
@@ -194,7 +200,7 @@ class DatabaseHelper {
       dataDataTypeId: dataTypeId,
       dataValue: value,
       dataTimeStamp: timestamp
-    });
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<DataType>> getAllDataTypes() async {

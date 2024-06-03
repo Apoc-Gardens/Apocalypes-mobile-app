@@ -20,6 +20,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
+  @override
+  void initState() {
+    super.initState();
+    databaseHelper.database;
+  }
+
   Future<int> getReceiverCount() async {
     return await databaseHelper.getReceiverCount() ?? 0;
   }
@@ -44,15 +50,15 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider(create: (_) => BluetoothProvider()),
             ],
             child: MaterialApp(
-              initialRoute: receiverCount == 0 ? '/' : '/sensors',
+              initialRoute: receiverCount == 0 ? '/properties' : '/sensors',
               routes: {
                 '/': (context) => Welcome(),
                 '/scan': (context) => ScanDevices(),
                 '/sensors': (context) => Sensors(),
                 '/characteristics': (context) => CharacteristicViewer(
-                    connectedDevice: ModalRoute.of(context)!.settings.arguments
-                        as BluetoothDevice),
+                    connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
                 '/test': (context) => dbpage(),
+                '/properties': (context) => const SensorPropertiesPage(),
               },
             ),
           );

@@ -27,6 +27,7 @@ class DatabaseHelper {
   static const tableDataTypes = 'datatypes';
   static const dataTypeId = 'id';
   static const dataTypeName = 'name';
+  static const dataTypeDescription = 'description';
   static const dataTypeUnit = 'unit';
 
   static const tableTestTable = 'testtable';
@@ -86,6 +87,7 @@ class DatabaseHelper {
       CREATE TABLE $tableDataTypes (
         $dataTypeId INTEGER PRIMARY KEY,
         $dataTypeName TEXT NOT NULL,
+        $dataTypeDescription TEXT,
         $dataTypeUnit TEXT
       )
     ''');
@@ -112,21 +114,46 @@ class DatabaseHelper {
     ''');
 
     // Insert initial data into datatypes table
-    await db.insert('datatypes', {'id': 1, 'name': 'Temperature', 'unit': 'C'});
-    await db.insert('datatypes', {'id': 2, 'name': 'Humidity', 'unit': '%'});
-    await db.insert('datatypes', {'id': 3, 'name': 'Light intensity', 'unit': 'Lux'});
-    await db.insert('datatypes', {'id': 4, 'name': 'Soil moisture', 'unit': '%'});
+    await db.insert('datatypes', {
+      'id': 1,
+      'name': 'Temperature',
+      'unit': 'C',
+      'description':
+          'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.'
+    });
+    await db.insert('datatypes', {
+      'id': 2,
+      'name': 'Humidity',
+      'unit': '%',
+      'description':
+          'Plays a crucial role in agriculture by influencing plant growth, transpiration, and the development of pests and diseases.',
+    });
+    await db.insert('datatypes', {
+      'id': 3,
+      'name': 'Light intensity',
+      'unit': 'Lux',
+      'description':
+          'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.',
+    });
+    await db.insert('datatypes', {
+      'id': 4,
+      'name': 'Soil moisture',
+      'unit': '%',
+      'description':
+          'Soil moisture directly impacts plant growth by influencing nutrient uptake, root development, and photosynthesis efficiency, essential processes for plant health and vitality.',
+    });
     //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 
   // Implement methods for CRUD operations here
 
   //CRUD for devices
-  Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
+  Future<int> insertReceiverDevice(
+      int? id, String name, String mac, String? lastsynced) async {
     Database db = await instance.database;
-    return await db.insert(tableReceivers, {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
-
+    return await db.insert(tableReceivers,
+        {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   Future<int> updateLastSync(int id, int timestamp) async{
     Database db = await instance.database;
     return await db.rawUpdate('UPDATE $tableReceivers SET $deviceLastSynced = ? WHERE $nodeTableId = ?', [timestamp,id]);
@@ -134,22 +161,26 @@ class DatabaseHelper {
 
   Future<int?> getReceiverCount() async{
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableReceivers'));
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(id) FROM $tableReceivers'));
   }
 
   Future<int> insertNode(Node node) async {
     Database db = await instance.database;
-    return await db.insert(tableSensorNodes, node.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert(tableSensorNodes, node.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
-  Future<int?> getNodeCount() async{
+  Future<int?> getNodeCount() async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableSensorNodes'));
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(id) FROM $tableSensorNodes'));
   }
 
   Future<List<Map<String, dynamic>>> getNodeById(String nid) async {
     Database db = await instance.database;
-    return await db.rawQuery('SELECT $nodeTableId FROM $tableSensorNodes WHERE $nodeId = ?',[nid]);
+    return await db.rawQuery(
+        'SELECT $nodeTableId FROM $tableSensorNodes WHERE $nodeId = ?', [nid]);
   }
 
   Future<List<Receiver>> getAllDevices() async {
@@ -187,13 +218,14 @@ class DatabaseHelper {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query('nodes');
     final Map<String, int> nodeMap = {};
-    for (Map<String,dynamic> map in maps) {
+    for (Map<String, dynamic> map in maps) {
       nodeMap[map[nodeId]] = map[nodeTableId];
     }
     return nodeMap;
   }
 
-  Future<int> insertData(int nodeId, int dataTypeId, double value, int timestamp) async {
+  Future<int> insertData(
+      int nodeId, int dataTypeId, double value, int timestamp) async {
     Database db = await instance.database;
     return await db.insert(tableData, {
       dataNodeId: nodeId,
@@ -250,10 +282,12 @@ class DatabaseHelper {
   Future<void> insertMultipleData(List<Data> dataList) async {
     //not complete
     Database db = await instance.database;
-    await db.rawQuery('INSERT INTO $tableData VALUES ($dataNodeId,$dataDataTypeId,$dataValue,$dataTimeStamp) ');
+    await db.rawQuery(
+        'INSERT INTO $tableData VALUES ($dataNodeId,$dataDataTypeId,$dataValue,$dataTimeStamp) ');
   }
 
-  Future<int> insertTestData(int deviceId, String name, String description) async {
+  Future<int> insertTestData(
+      int deviceId, String name, String description) async {
     Database db = await instance.database;
     return await db.insert(tableTestTable, {
       testTableId: deviceId,
@@ -271,13 +305,15 @@ class DatabaseHelper {
     });
   }
 
-  Future<int?> getCount() async{
+  Future<int?> getCount() async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM testtable'));
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(id) FROM testtable'));
   }
 
-  Future<int?> getMax() async{
+  Future<int?> getMax() async {
     Database db = await instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(id) FROM testtable'));
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT MAX(id) FROM testtable'));
   }
 }

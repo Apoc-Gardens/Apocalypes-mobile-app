@@ -29,6 +29,7 @@ class _ViewSensorState extends State<ViewSensor> {
     super.initState();
     nodeName = widget.node.name;
     nodeDescription = widget.node.description ?? 'No description';
+    getData();
   }
 
   Future<void> getData() async {

@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
               initialRoute: receiverCount == 0 ? '/properties' : '/sensors',
               routes: {
                 '/': (context) => Welcome(),
-                '/scan': (context) => MyHomePage(),
+                '/scan': (context) => ScanDevices(),
                 '/sensors': (context) => Sensors(),
                 '/characteristics': (context) => CharacteristicViewer(
                     connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),

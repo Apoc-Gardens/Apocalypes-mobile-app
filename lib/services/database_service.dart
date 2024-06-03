@@ -108,7 +108,8 @@ class DatabaseHelper {
         $dataValue REAL,
         $dataTimeStamp INTEGER,
         FOREIGN KEY ($dataNodeId) REFERENCES $tableSensorNodes ($nodeTableId) ON DELETE CASCADE,
-        FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE
+        FOREIGN KEY ($dataDataTypeId) REFERENCES $tableDataTypes ($dataTypeId) ON DELETE CASCADE,
+        UNIQUE($dataNodeId, $dataDataTypeId, $dataValue, $dataTimeStamp)
       )
     ''');
 
@@ -153,9 +154,12 @@ class DatabaseHelper {
     return await db.insert(tableReceivers,
         {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced},
         conflictAlgorithm: ConflictAlgorithm.ignore);
+  Future<int> updateLastSync(int id, int timestamp) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableReceivers SET $deviceLastSynced = ? WHERE $nodeTableId = ?', [timestamp,id]);
   }
 
-  Future<int?> getReceiverCount() async {
+  Future<int?> getReceiverCount() async{
     Database db = await instance.database;
     return Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(id) FROM $tableReceivers'));
@@ -187,6 +191,21 @@ class DatabaseHelper {
     });
   }
 
+  Future<int> updateNodeName(String tableId, String name) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeName = ? WHERE $nodeTableId = ?', [name,tableId]);
+  }
+
+  Future<int> updateNodeDescription(String tableId, String description) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET $nodeDescription = ? WHERE $nodeTableId = ?', [description,tableId]);
+  }
+
+  Future<int> updateNodeDetails(String tableId, String field, String value) async{
+    Database db = await instance.database;
+    return await db.rawUpdate('UPDATE $tableSensorNodes SET ? = ? WHERE $nodeTableId = ?', [field,value,tableId]);
+  }
+
   Future<List<Node>> getAllNodes() async {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query('nodes');
@@ -213,7 +232,7 @@ class DatabaseHelper {
       dataDataTypeId: dataTypeId,
       dataValue: value,
       dataTimeStamp: timestamp
-    });
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<DataType>> getAllDataTypes() async {
@@ -230,6 +249,34 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return Data.fromMap(maps[i]);
     });
+  }
+
+  Future<List<Data>> getLatestReadings(String nodeid) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? ORDER BY $dataTimeStamp DESC LIMIT 5',[nodeid]);
+    return List.generate(maps.length, (i) {
+      return Data.fromMap(maps[i]);
+    });
+  }
+
+  Future<int?> countData(String dataNid) async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
+  }
+
+  Future<int?> latestDataTimeStamp(String dataNid) async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX($dataTimeStamp) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
+  }
+
+  Future<int?> oldestDataTimeStamp(String dataNid) async{
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MIN($dataTimeStamp) FROM $tableData WHERE $dataNodeId = ?',[dataNid]));
+  }
+
+  Future<List<Map<String, dynamic>>> getDataByNodeTime(String dataNid, int startTime, int endTime) async{
+    Database db = await instance.database;
+    return await db.rawQuery('SELECT * FROM $tableData WHERE $dataNodeId = ? AND ($dataTimeStamp  BETWEEN ? AND ?)',[dataNid, startTime, endTime]);
   }
 
   Future<void> insertMultipleData(List<Data> dataList) async {

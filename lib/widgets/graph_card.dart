@@ -22,7 +22,8 @@ class GraphCard extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 5),
-                Text(graphData.dataType!.information, style: const TextStyle(fontSize: 12)),
+                Text(graphData.dataType!.description,
+                    style: const TextStyle(fontSize: 12)),
                 const Divider(
                   height: 30,
                   thickness: 1,
@@ -57,8 +58,9 @@ class GraphCard extends StatelessWidget {
         LineChartBarData(
           spots: graphData.dataSpots!,
           isCurved: true,
-          gradient: const LinearGradient(
-            colors: [Colors.black, Colors.black],
+          gradient: LinearGradient(
+            colors: graphData.gradientColors ??
+                const [Colors.blue, Colors.blueAccent],
           ),
           barWidth: 4,
           isStrokeCapRound: true,
@@ -67,8 +69,9 @@ class GraphCard extends StatelessWidget {
           ),
           belowBarData: BarAreaData(
             show: false,
-            gradient: const LinearGradient(
-              colors: [Colors.black, Colors.black],
+            gradient: LinearGradient(
+              colors: graphData.gradientColors ??
+                  const [Colors.blue, Colors.blueAccent],
             ),
           ),
         ),

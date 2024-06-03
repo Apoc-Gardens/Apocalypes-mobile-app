@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:mybluetoothapp/dao/data_dao.dart';
@@ -46,6 +47,29 @@ class GraphBuilder {
 
   GraphBuilder setDataType(DataType dataType) {
     _graphData.dataType = dataType;
+
+    if(dataType.id == 1) {
+      _graphData.gradientColors = [
+        const Color(0xff23b6e6),
+        const Color(0xff02d39a),
+      ];
+    } else if (dataType.id == 2) {
+      _graphData.gradientColors = [
+        Color.fromARGB(255, 230, 110, 35),
+        Color.fromARGB(255, 211, 82, 2),
+      ];
+    } else if (dataType.id == 3) {
+      _graphData.gradientColors = [
+        Color.fromARGB(255, 35, 230, 106),
+        Color.fromARGB(255, 40, 211, 2),
+      ];
+    } else if (dataType.id == 4) {
+      _graphData.gradientColors = [
+        Color.fromARGB(255, 204, 35, 230),
+        Color.fromARGB(255, 141, 2, 211),
+      ];
+    }
+
     return this;
   }
 
@@ -90,6 +114,7 @@ class GraphBuilder {
     return _graphData;
   }
 
+// TODO : Make this method more efficient & concise
   Future<List<Data>> _retrieveDataPointsFromDatabaseAndFilter() async {
     DataDao dataDao = DataDaoImpl();
 
@@ -196,6 +221,7 @@ class GraphBuilder {
     return datapoints;
   }
 
+
   void _populateData() {
     DataDao dataDao = DataDaoImpl();
     dataDao.deleteAllData();
@@ -204,7 +230,6 @@ class GraphBuilder {
       double value = random.nextDouble();
       int hoursAgo = i;
 
-
         dataDao.insertData(Data(
             nodeId: 1,
             dataTypeId: 1,
@@ -212,6 +237,42 @@ class GraphBuilder {
             timestamp: DateTime.now().millisecondsSinceEpoch -
                 Duration(hours: hoursAgo).inMilliseconds));
       }
-    
+      for (int i = 0; i < (24 * 30); i++) {
+      Random random = Random();
+      double value = random.nextDouble();
+      int hoursAgo = i;
+
+        dataDao.insertData(Data(
+            nodeId: 1,
+            dataTypeId: 2,
+            value: value,
+            timestamp: DateTime.now().millisecondsSinceEpoch -
+                Duration(hours: hoursAgo).inMilliseconds));
+      }
+      for (int i = 0; i < (24 * 30); i++) {
+      Random random = Random();
+      double value = random.nextDouble();
+      int hoursAgo = i;
+
+        dataDao.insertData(Data(
+            nodeId: 1,
+            dataTypeId: 3,
+            value: value,
+            timestamp: DateTime.now().millisecondsSinceEpoch -
+                Duration(hours: hoursAgo).inMilliseconds));
+      }
+      for (int i = 0; i < (24 * 30); i++) {
+      Random random = Random();
+      double value = random.nextDouble();
+      int hoursAgo = i;
+
+        dataDao.insertData(Data(
+            nodeId: 1,
+            dataTypeId: 4,
+            value: value,
+            timestamp: DateTime.now().millisecondsSinceEpoch -
+                Duration(hours: hoursAgo).inMilliseconds));
+      }
   }
+
 }

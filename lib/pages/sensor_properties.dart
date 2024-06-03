@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mybluetoothapp/dao/data_type_dao.dart';
+import 'package:mybluetoothapp/daoImpl/data_type_dao_impl.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
 import 'package:mybluetoothapp/models/graph_data.dart';
 import 'package:mybluetoothapp/models/graph_interval.dart';
@@ -13,24 +15,13 @@ class SensorPropertiesPage extends StatefulWidget {
 }
 
 class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
-  late GraphData graphData;
+  List<GraphData> graphDataList = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadGraphData();
-  }
-
-  Future<void> _loadGraphData() async {
-    graphData = await GraphBuilder()
-        .setGraphInterval(GraphInterval.twentyFourHoursBefore)
-        .setDataType(DataType(id: 1, name: "Humidity", unit: ""))
-        .build();
-
-    setState(() {
-      _isLoading = false;
-    });
+    _loadGraphData(GraphInterval.twentyFourHoursBefore);
   }
 
   @override
@@ -44,7 +35,16 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
                     right: 18.0, left: 12.0, top: 48, bottom: 12),
                 children: <Widget>[
                   _timeRangeSelector(),
-                  GraphCard(graphData: graphData),
+                  const SizedBox(height: 12),
+                  graphDataList.isEmpty
+                      ? const Center(
+                          child: Text("No data available"),
+                        )
+                      : Column(
+                          children: graphDataList
+                              .map((GraphData data) => GraphCard(graphData: data))
+                              .toList(),
+                        )
                 ],
               ));
   }
@@ -73,10 +73,8 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
         setState(() {
           _isLoading = true;
         });
-        graphData = await GraphBuilder()
-            .setGraphInterval(interval)
-            .setDataType(DataType(id: 1, name: "Humidity", unit: ""))
-            .build();
+        graphDataList.clear();
+        await _loadGraphData(interval);
         setState(() {
           _isLoading = false;
         });
@@ -84,4 +82,23 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
       child: Text(text),
     );
   }
+
+  Future<void> _loadGraphData(GraphInterval interval) async {
+    DataTypeDao dataTypeDao = DataTypeDaoImpl();
+
+    List<DataType> dataTypes = await dataTypeDao.getDataTypes();
+
+    for (DataType dataType in dataTypes) {
+      GraphData graphData = await GraphBuilder()
+          .setGraphInterval(interval)
+          .setDataType(dataType)
+          .build();
+      graphDataList.add(graphData);
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
 }

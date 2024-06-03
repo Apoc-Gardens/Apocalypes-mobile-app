@@ -20,6 +20,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   DatabaseHelper databaseHelper = DatabaseHelper();
 
+  @override
+  void initState() {
+    super.initState();
+    databaseHelper.database;
+  }
+
   Future<int> getReceiverCount() async {
     return await databaseHelper.getReceiverCount() ?? 0;
   }
@@ -50,8 +56,7 @@ class _MyAppState extends State<MyApp> {
                 '/scan': (context) => MyHomePage(),
                 '/sensors': (context) => Sensors(),
                 '/characteristics': (context) => CharacteristicViewer(
-                    connectedDevice: ModalRoute.of(context)!.settings.arguments
-                        as BluetoothDevice),
+                    connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
                 '/test': (context) => dbpage(),
                 '/properties': (context) => const SensorPropertiesPage(),
               },

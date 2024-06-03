@@ -51,11 +51,10 @@ class DataTypeDaoImpl extends DataTypeDao {
   @override
   Future<List<DataType>> getDataTypes() async{
     final db = _databaseHelper.database;
-    final List<Map<String, dynamic>> maps = db.then((value) => value.query('datatypes')) as List<Map<String, dynamic>>;
+    final List<Map<String, dynamic>> maps = await db.then((value) => value.query('datatypes'));
     return List.generate(maps.length, (i) {
       return DataType.fromMap(maps[i]);
     });
-
   }
 
   @override

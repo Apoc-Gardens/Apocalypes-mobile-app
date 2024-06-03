@@ -118,7 +118,9 @@ class GraphBuilder {
 
     final dataList = await _retrieveDataPointsFromDatabaseAndFilter();
     _graphData.dataSpots = dataList
-        .map((data) => FlSpot(data.timestamp.toDouble(), data.value))
+        .map((data) => FlSpot(
+          data.timestamp.toDouble()
+          , double.parse(data.value.toStringAsFixed(2))))
         .toList();
 
     return _graphData;
@@ -230,6 +232,7 @@ class GraphBuilder {
       if (timestamp < minX || minX == 0) {
         minX = timestamp;
       }
+
     }
 
 // Calculate avgY and avgX

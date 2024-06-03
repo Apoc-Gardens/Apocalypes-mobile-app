@@ -124,6 +124,26 @@ class DataDaoImpl extends DataDao {
   }
 
   @override
+  Future<List<Data>> getDataInTimeRangeByNodeIdAndDataTypeId(
+      int nodeId, int dataTypeId, int startTime, int endTime) async {
+    final db = await _databaseHelper.database;
+
+    final List<Map<String, dynamic>> maps = await db.query('data',
+        where:
+            'node_id = ? AND datatype_id = ? AND timestamp >= ? AND timestamp <= ?',
+        whereArgs: [nodeId, dataTypeId, startTime, endTime]);
+    return List.generate(maps.length, (i) {
+      return Data(
+        id: maps[i]['id'],
+        nodeId: maps[i]['node_id'],
+        dataTypeId: maps[i]['datatype_id'],
+        value: maps[i]['value'],
+        timestamp: maps[i]['timestamp'],
+      );
+    });
+  }
+
+  @override
   Future<List<Data>> getDataListByIdList(List<int> idList) async {
     final db = await _databaseHelper.database;
 

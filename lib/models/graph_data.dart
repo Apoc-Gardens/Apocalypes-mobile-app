@@ -2,9 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
 import 'package:mybluetoothapp/models/graph_interval.dart';
+import 'package:mybluetoothapp/models/node.dart';
 
 class GraphData {
   DataType? dataType;
+  Node? node;
   List<FlSpot>? dataSpots;
   GraphInterval? interval;
   DateTime? startTime;
@@ -16,8 +18,4 @@ class GraphData {
   double? minX;
   double? avgX;
   List<Color>? gradientColors;
-
-  GraphInterval? getInterval() {
-    return interval;
-  }
 }

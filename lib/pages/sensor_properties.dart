@@ -4,6 +4,7 @@ import 'package:mybluetoothapp/daoImpl/data_type_dao_impl.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
 import 'package:mybluetoothapp/models/graph_data.dart';
 import 'package:mybluetoothapp/models/graph_interval.dart';
+import 'package:mybluetoothapp/models/node.dart';
 import 'package:mybluetoothapp/services/graph_data_builder.dart';
 import 'package:mybluetoothapp/widgets/graph_card.dart';
 
@@ -92,6 +93,7 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
       GraphData graphData = await GraphBuilder()
           .setGraphInterval(interval)
           .setDataType(dataType)
+          .setNode(Node(id: 1, nid: "1", name: "Carrot Patch", description: ""))
           .build();
       graphDataList.add(graphData);
     }

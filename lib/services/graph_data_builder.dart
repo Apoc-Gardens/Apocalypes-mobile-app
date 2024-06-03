@@ -8,6 +8,7 @@ import 'package:mybluetoothapp/models/datatype.dart';
 import 'package:mybluetoothapp/models/graph_data.dart';
 import 'package:mybluetoothapp/models/graph_interval.dart';
 import 'package:mybluetoothapp/models/data.dart';
+import 'package:mybluetoothapp/models/node.dart';
 
 class GraphBuilder {
   final GraphData _graphData = GraphData();
@@ -45,28 +46,33 @@ class GraphBuilder {
     return this;
   }
 
+  GraphBuilder setNode(Node node) {
+    _graphData.node = node;
+    return this;
+  }
+
   GraphBuilder setDataType(DataType dataType) {
     _graphData.dataType = dataType;
 
-    if(dataType.id == 1) {
+    if (dataType.id == 1) {
       _graphData.gradientColors = [
-        const Color(0xff23b6e6),
-        const Color(0xff02d39a),
+        const Color.fromARGB(255, 180, 23, 23),
+        const Color.fromARGB(255, 244, 0, 0),
       ];
     } else if (dataType.id == 2) {
       _graphData.gradientColors = [
-        Color.fromARGB(255, 230, 110, 35),
-        Color.fromARGB(255, 211, 82, 2),
+        const Color.fromARGB(255, 216, 155, 0),
+        const Color.fromARGB(255, 226, 196, 28),
       ];
     } else if (dataType.id == 3) {
       _graphData.gradientColors = [
-        Color.fromARGB(255, 35, 230, 106),
-        Color.fromARGB(255, 40, 211, 2),
+        const Color.fromARGB(255, 0, 198, 96),
+        const Color.fromARGB(255, 0, 173, 52),
       ];
     } else if (dataType.id == 4) {
       _graphData.gradientColors = [
-        Color.fromARGB(255, 204, 35, 230),
-        Color.fromARGB(255, 141, 2, 211),
+        const Color.fromARGB(255, 204, 35, 230),
+        const Color.fromARGB(255, 173, 2, 211),
       ];
     }
 
@@ -102,8 +108,12 @@ class GraphBuilder {
       }
     }
 
-    if(_graphData.interval == null) {
+    if (_graphData.interval == null) {
       throw Exception('Interval must be set');
+    }
+
+    if (_graphData.node == null) {
+      throw Exception('Node must be set');
     }
 
     final dataList = await _retrieveDataPointsFromDatabaseAndFilter();
@@ -114,17 +124,17 @@ class GraphBuilder {
     return _graphData;
   }
 
-// TODO : Make this method more efficient & concise
   Future<List<Data>> _retrieveDataPointsFromDatabaseAndFilter() async {
     DataDao dataDao = DataDaoImpl();
 
+    int nodeId = _graphData.node?.id ?? -1;
     int dataTypeId = _graphData.dataType?.id ?? -1;
     int startTime = _graphData.startTime?.millisecondsSinceEpoch ?? 0;
     int endTime = _graphData.endTime?.millisecondsSinceEpoch ??
         DateTime.now().millisecondsSinceEpoch;
 
-    final datapoints = await dataDao.getDataInTimeRangeByDataTypeId(
-        dataTypeId, startTime, endTime);
+    final datapoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
+        nodeId, dataTypeId, startTime, endTime);
 
     if (datapoints.isEmpty) {
       _graphData
@@ -136,91 +146,107 @@ class GraphBuilder {
         ..avgX = 0;
       return [];
     }
-    
-    if(_graphData.interval == GraphInterval.twentyFourHoursBefore) {
-      datapoints.removeWhere((data) => data.timestamp < DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch);
-      datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-      List<Data> newDatapoints = [];
-      int timestamp = DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+    List<Data> newDatapoints = [];
+    int timeStamp;
+    int timeIncrements;
+    int maxTimeValue;
 
-      for(int i = 0; i < 24; i++) {
-        Data? data = datapoints.firstWhere((element) => element.timestamp >= timestamp && element.timestamp < timestamp + const Duration(hours: 1).inMilliseconds, 
-          orElse: () => Data(nodeId: 1, dataTypeId: 1, value: 0, timestamp: timestamp));
-        newDatapoints.add(data);
-        timestamp += const Duration(hours: 1).inMilliseconds;
-      }
-      datapoints.clear();
-      datapoints.addAll(newDatapoints);
-
-    } else if(_graphData.interval == GraphInterval.lastSevenDays) {
-
-      datapoints.removeWhere((data) => data.timestamp < DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch);
-      datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-      List<Data> newDatapoints = [];
-      int timestamp = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
-
-      for(int i = 0; i < 7; i++) {
-        Data? data = datapoints.firstWhere((element) => element.timestamp >= timestamp && element.timestamp < timestamp + const Duration(days: 1).inMilliseconds, 
-          orElse: () => Data(nodeId: 1, dataTypeId: 1, value: 0, timestamp: timestamp));
-        newDatapoints.add(data);
-        timestamp += const Duration(days: 1).inMilliseconds;
-      }
-
-      datapoints.clear();
-      datapoints.addAll(newDatapoints);
-
-    } else if(_graphData.interval == GraphInterval.lastThirtyDays) {
-
-      datapoints.removeWhere((data) => data.timestamp < DateTime.now().subtract(const Duration(days: 30)).millisecondsSinceEpoch);
-      datapoints.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
-      List<Data> newDatapoints = [];
-      int timestamp = DateTime.now().subtract(const Duration(days: 30)).millisecondsSinceEpoch;
-
-      for(int i = 0; i < 31; i++) {
-        Data? data = datapoints.firstWhere((element) => element.timestamp >= timestamp && element.timestamp < timestamp + const Duration(days: 1).inMilliseconds, 
-          orElse: () => Data(nodeId: 1, dataTypeId: 1, value: 0, timestamp: timestamp));
-        newDatapoints.add(data);
-        timestamp += const Duration(days: 1).inMilliseconds;
-      }
-
-      datapoints.clear();
-      datapoints.addAll(newDatapoints);
+    switch (_graphData.interval ?? GraphInterval.twentyFourHoursBefore) {
+      case GraphInterval.twentyFourHoursBefore:
+        timeStamp = DateTime.now()
+            .subtract(const Duration(days: 1))
+            .millisecondsSinceEpoch;
+        timeIncrements = const Duration(hours: 1).inMilliseconds;
+        maxTimeValue = 24;
+        break;
+      case GraphInterval.lastSevenDays:
+        timeStamp = DateTime.now()
+            .subtract(const Duration(days: 7))
+            .millisecondsSinceEpoch;
+        timeIncrements = const Duration(days: 1).inMilliseconds;
+        maxTimeValue = 7;
+        break;
+      case GraphInterval.lastThirtyDays:
+        timeStamp = DateTime.now()
+            .subtract(const Duration(days: 30))
+            .millisecondsSinceEpoch;
+        timeIncrements = const Duration(days: 1).inMilliseconds;
+        maxTimeValue = 31;
+        break;
+      case GraphInterval.custom:
+        timeStamp = _graphData.startTime?.millisecondsSinceEpoch ?? 0;
+        timeIncrements = const Duration(days: 1).inMilliseconds;
+        maxTimeValue =
+            ((_graphData.endTime?.millisecondsSinceEpoch ?? 0) - timeStamp) ~/
+                timeIncrements;
+        break;
     }
 
+    for (int i = 0; i < maxTimeValue; i++) {
+      Data? data = datapoints.firstWhere(
+          (element) =>
+              element.timestamp >= timeStamp &&
+              element.timestamp < timeStamp + timeIncrements,
+          orElse: () => Data(
+              nodeId: _graphData.node!.id ?? -1,
+              dataTypeId: _graphData.dataType!.id,
+              value: 0,
+              timestamp: timeStamp));
+      newDatapoints.add(data);
+      timeStamp += timeIncrements;
+    }
 
-    final maxY =
-        datapoints.map((data) => data.value).reduce((a, b) => a > b ? a : b);
-    final minY =
-        datapoints.map((data) => data.value).reduce((a, b) => a < b ? a : b);
-    final avgY = datapoints.map((data) => data.value).reduce((a, b) => a + b) /
-        datapoints.length;
+    datapoints.clear();
+    datapoints.addAll(newDatapoints);
 
-    final maxX = datapoints
-        .map((data) => data.timestamp)
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
-    final minX = datapoints
-        .map((data) => data.timestamp)
-        .reduce((a, b) => a < b ? a : b)
-        .toDouble();
-    final avgX =
-        datapoints.map((data) => data.timestamp).reduce((a, b) => a + b) /
-            datapoints.length;
+    // Initialize variables to hold the values
+    double maxY = double.negativeInfinity;
+    double minY = double.infinity;
+    double sumY = 0;
+    int maxX = 0;
+    int minX = 0;
 
+// Calculate maxY, minY, sumY, maxX, and minX in one loop
+    for (Data data in datapoints) {
+      double value = data.value;
+      int timestamp = data.timestamp;
+
+      // Calculate maxY and minY
+      if (value > maxY) {
+        maxY = value;
+      }
+      if (value < minY) {
+        minY = value;
+      }
+
+      // Calculate sumY
+      sumY += value;
+
+      // Calculate maxX and minX
+      if (timestamp > maxX) {
+        maxX = timestamp;
+      }
+      if (timestamp < minX || minX == 0) {
+        minX = timestamp;
+      }
+    }
+
+// Calculate avgY and avgX
+    double avgY = sumY / datapoints.length;
+    double avgX = (maxX + minX) / 2;
+
+// Set the values in _graphData
     _graphData
       ..maxY = maxY
       ..minY = minY
       ..avgY = avgY
-      ..maxX = maxX
-      ..minX = minX
+      ..maxX = maxX.toDouble()
+      ..minX = minX.toDouble()
       ..avgX = avgX;
 
     return datapoints;
   }
-
 
   void _populateData() {
     DataDao dataDao = DataDaoImpl();
@@ -230,49 +256,48 @@ class GraphBuilder {
       double value = random.nextDouble();
       int hoursAgo = i;
 
-        dataDao.insertData(Data(
-            nodeId: 1,
-            dataTypeId: 1,
-            value: value,
-            timestamp: DateTime.now().millisecondsSinceEpoch -
-                Duration(hours: hoursAgo).inMilliseconds));
-      }
-      for (int i = 0; i < (24 * 30); i++) {
+      dataDao.insertData(Data(
+          nodeId: 1,
+          dataTypeId: 1,
+          value: value,
+          timestamp: DateTime.now().millisecondsSinceEpoch -
+              Duration(hours: hoursAgo).inMilliseconds));
+    }
+    for (int i = 0; i < (24 * 30); i++) {
       Random random = Random();
       double value = random.nextDouble();
       int hoursAgo = i;
 
-        dataDao.insertData(Data(
-            nodeId: 1,
-            dataTypeId: 2,
-            value: value,
-            timestamp: DateTime.now().millisecondsSinceEpoch -
-                Duration(hours: hoursAgo).inMilliseconds));
-      }
-      for (int i = 0; i < (24 * 30); i++) {
+      dataDao.insertData(Data(
+          nodeId: 1,
+          dataTypeId: 2,
+          value: value,
+          timestamp: DateTime.now().millisecondsSinceEpoch -
+              Duration(hours: hoursAgo).inMilliseconds));
+    }
+    for (int i = 0; i < (24 * 30); i++) {
       Random random = Random();
       double value = random.nextDouble();
       int hoursAgo = i;
 
-        dataDao.insertData(Data(
-            nodeId: 1,
-            dataTypeId: 3,
-            value: value,
-            timestamp: DateTime.now().millisecondsSinceEpoch -
-                Duration(hours: hoursAgo).inMilliseconds));
-      }
-      for (int i = 0; i < (24 * 30); i++) {
+      dataDao.insertData(Data(
+          nodeId: 1,
+          dataTypeId: 3,
+          value: value,
+          timestamp: DateTime.now().millisecondsSinceEpoch -
+              Duration(hours: hoursAgo).inMilliseconds));
+    }
+    for (int i = 0; i < (24 * 30); i++) {
       Random random = Random();
       double value = random.nextDouble();
       int hoursAgo = i;
 
-        dataDao.insertData(Data(
-            nodeId: 1,
-            dataTypeId: 4,
-            value: value,
-            timestamp: DateTime.now().millisecondsSinceEpoch -
-                Duration(hours: hoursAgo).inMilliseconds));
-      }
+      dataDao.insertData(Data(
+          nodeId: 1,
+          dataTypeId: 4,
+          value: value,
+          timestamp: DateTime.now().millisecondsSinceEpoch -
+              Duration(hours: hoursAgo).inMilliseconds));
+    }
   }
-
 }

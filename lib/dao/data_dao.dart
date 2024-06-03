@@ -141,4 +141,19 @@ abstract class DataDao {
   ///   If no data exists that meets the criteria, an empty list will be returned.
   Future<List<Data>> getDataInTimeRangeByNodeId(
       int nodeId, int startTime, int endTime);
+
+  /// Retrieves a list of data objects within a specified time range, filtered by node ID and data type ID.
+  ///
+  /// This method fetches data objects where the `timestamp` falls between the provided `startTime` (inclusive) and `endTime` (inclusive) timestamps,
+  ///
+  /// Args:
+  ///  nodeId: The ID of the node to filter by.
+  /// dataTypeId: The ID of the data type to filter by.
+  /// startTime: The starting timestamp (inclusive) of the desired time range in milliseconds since epoch.
+  /// endTime: The ending timestamp (inclusive) of the desired time range in milliseconds since epoch.
+  ///
+  /// Returns: A `Future<List<Data>>` containing the list of data objects that match the node ID, data type ID, and fall within the specified time range.
+  /// If no data exists that meets the criteria, an empty list will be returned.
+  Future<List<Data>> getDataInTimeRangeByNodeIdAndDataTypeId(
+      int nodeId, int dataTypeId, int startTime, int endTime);
 }

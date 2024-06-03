@@ -82,7 +82,7 @@ class _ScanDevicesState extends State<ScanDevices> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bluetooth Devices'),
+        title: const Text('Bluetooth Devices'),
       ),
       body: ListView.builder(
         itemCount: devicesList.length,
@@ -97,11 +97,11 @@ class _ScanDevicesState extends State<ScanDevices> {
                 connectToDevice(device.device);
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: Color(0xFF0AA061), side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                foregroundColor: const Color(0xFF0AA061), side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0), // Border radius
                 ),
-                padding: EdgeInsets.all(6.0), // Padding
+                padding: const EdgeInsets.all(6.0), // Padding
               ),
               child: Text('Connect and save'),
             ),

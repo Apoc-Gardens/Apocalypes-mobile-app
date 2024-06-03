@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class CharacteristicValueListPage extends StatelessWidget {
   final List<String> characteristicValues;
 
-  const CharacteristicValueListPage({required this.characteristicValues});
+  const CharacteristicValueListPage({super.key, required this.characteristicValues});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Characteristic Values'),
+        title: const Text('Characteristic Values'),
       ),
       body: ListView.builder(
         itemCount: characteristicValues.length,

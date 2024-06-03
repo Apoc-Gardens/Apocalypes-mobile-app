@@ -21,6 +21,12 @@ class _SensorsState extends State<Sensors> {
     nodesFuture = databaseHelper.getAllNodes();
   }
 
+  Future<void> refreshNodes() async {
+    setState(() {
+      nodesFuture = databaseHelper.getAllNodes();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,25 +64,28 @@ class _SensorsState extends State<Sensors> {
               ],
             ),
             Expanded(
-              child: FutureBuilder<List<Node>>(
-                future: nodesFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No sensors found'));
-                  } else {
-                    List<Node> nodes = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: nodes.length,
-                      itemBuilder: (context, index) {
-                        return SensorCard(node: nodes[index]);
-                      },
-                    );
-                  }
-                },
+              child: RefreshIndicator(
+                onRefresh: refreshNodes,
+                child: FutureBuilder<List<Node>>(
+                  future: nodesFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No sensors found'));
+                    } else {
+                      List<Node> nodes = snapshot.data!;
+                      return ListView.builder(
+                        itemCount: nodes.length,
+                        itemBuilder: (context, index) {
+                          return SensorCard(node: nodes[index]);
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
             ),
             SyncCard(),

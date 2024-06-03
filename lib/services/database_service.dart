@@ -1,3 +1,5 @@
+import 'package:mybluetoothapp/dao/data_dao.dart';
+import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 import 'package:mybluetoothapp/models/node.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,6 +29,7 @@ class DatabaseHelper {
   static const tableDataTypes = 'datatypes';
   static const dataTypeId = 'id';
   static const dataTypeName = 'name';
+  static const dataTypeInformation = 'information';
   static const dataTypeUnit = 'unit';
 
   static const tableTestTable = 'testtable';
@@ -86,6 +89,7 @@ class DatabaseHelper {
       CREATE TABLE $tableDataTypes (
         $dataTypeId INTEGER PRIMARY KEY,
         $dataTypeName TEXT NOT NULL,
+        $dataTypeInformation TEXT,
         $dataTypeUnit TEXT
       )
     ''');
@@ -111,10 +115,11 @@ class DatabaseHelper {
     ''');
 
     // Insert initial data into datatypes table
-    await db.insert('datatypes', {'id': 1, 'name': 'Temperature', 'unit': 'C'});
-    await db.insert('datatypes', {'id': 2, 'name': 'Humidity', 'unit': '%'});
-    await db.insert('datatypes', {'id': 3, 'name': 'Light intensity', 'unit': 'Lux'});
-    await db.insert('datatypes', {'id': 4, 'name': 'Soil moisture', 'unit': '%'});
+    //TODO: Change the information to be more descriptive
+    await db.insert('datatypes', {'id': 1,'information': 'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.', 'name': 'Temperature', 'unit': 'C'});
+    await db.insert('datatypes', {'id': 2,'information': 'Plays a crucial role in agriculture by influencing plant growth, transpiration, and the development of pests and diseases.', 'name': 'Humidity', 'unit': '%'});
+    await db.insert('datatypes', {'id': 3,'information': 'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.', 'name': 'Light intensity', 'unit': 'Lux'});
+    await db.insert('datatypes', {'id': 4,'information': 'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.', 'name': 'Soil moisture', 'unit': '%'});
     //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 

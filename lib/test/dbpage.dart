@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/models/receiver.dart';
+import '../models/data.dart';
 import '../models/datatype.dart';
 import '../models/node.dart';
 import '../models/test_table.dart';
@@ -63,6 +64,13 @@ class _dbpageState extends State<dbpage> {
       print('ID: ${n.id}, NID: ${n.nid}, Name: ${n.name}, Description: ${n.description}');
     }
     print(sensors);
+  }
+
+  Future<void> readData() async {
+    List<Data> data = await databaseHelper.getAllData();
+    for (var dt in data) {
+      print('ID: ${dt.id}, data type: ${dt.dataTypeId}, node id: ${dt.nodeId}, value: ${dt.value}, time: ${dt.timestamp},');
+    }
   }
 
   Future<void> readSpecificNodes() async {
@@ -190,6 +198,25 @@ class _dbpageState extends State<dbpage> {
               ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
             ),
             child: const Text('Read specififc node',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          ElevatedButton(
+            onPressed: () {
+              readData();
+              //readAllnodes();
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Adjust the value as needed
+              ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
+            ),
+            child: const Text('Read data',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

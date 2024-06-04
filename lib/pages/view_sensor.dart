@@ -13,6 +13,7 @@ import '../services/database_service.dart';
 
 class ViewSensor extends StatefulWidget {
   final Node node;
+
   const ViewSensor({super.key, required this.node});
 
   @override
@@ -20,9 +21,11 @@ class ViewSensor extends StatefulWidget {
 }
 
 class _ViewSensorState extends State<ViewSensor> {
+  bool _isGraphLoading = true;
+
   List<GraphData> graphDataList = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
-  int selectedIndex = 1;
+  int selectedIndex = GraphInterval.LastTwentyFourHours.index;
   int noOfData = 0;
   int latestTime = 0;
   int oldestTime = 0;
@@ -145,14 +148,15 @@ class _ViewSensorState extends State<ViewSensor> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: SafeArea(
+        minimum: const EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0, bottom: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const BackButton(),
                 GestureDetector(
                   onTap: () {
                     showEditDialog('Name', widget.node.name, (newValue) {
@@ -221,96 +225,104 @@ class _ViewSensorState extends State<ViewSensor> {
             const SizedBox(height: 20),
             _timeRangeSelector(),
             const SizedBox(height: 12),
-            graphDataList.isEmpty
-                ? const Center(
-                    child: Text("No data available"),
-                  )
-                : Column(
-                    children: graphDataList
-                        .map((GraphData data) => GraphCard(graphData: data))
-                        .toList(),
-                  )
+            Expanded(
+              child: _isGraphLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : graphDataList.isEmpty
+                      ? const Center(child: Text("No data available"))
+                      : ListView(
+                          children: graphDataList
+                              .map((GraphData data) =>
+                                  GraphCard(graphData: data))
+                              .toList(),
+                        ),
+            )
           ],
         ),
       ),
     );
   }
 
-/// Creates a widget that allows the user to select the time range for the graph.
-///
-/// This widget displays a label "TIME RANGE" followed by a row of buttons
-/// representing different predefined time intervals (`24h`, `7d`, `30d`) and a
-/// custom option. Clicking a button triggers the selection of the corresponding
-/// `GraphInterval` enum value.
-///
-/// Returns: A `Widget` representing the time range selector.
-Widget _timeRangeSelector() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      const Text(
-        'TIME RANGE',
+  /// Creates a widget that allows the user to select the time range for the graph.
+  ///
+  /// This widget displays a label "TIME RANGE" followed by a row of buttons
+  /// representing different predefined time intervals (`24h`, `7d`, `30d`) and a
+  /// custom option. Clicking a button triggers the selection of the corresponding
+  /// `GraphInterval` enum value.
+  ///
+  /// Returns: A `Widget` representing the time range selector.
+  Widget _timeRangeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Text(
+          'TIME RANGE',
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.normal,
+            color: Color(0xFF0AA061),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8.0,
+          children: <Widget>[
+            _timeRangeButton("24h", GraphInterval.LastTwentyFourHours),
+            _timeRangeButton("7d", GraphInterval.LastSevenDays),
+            _timeRangeButton("30d", GraphInterval.LastThirtyDays),
+            _timeRangeButton("Custom", GraphInterval.Custom)
+          ],
+        )
+      ],
+    );
+  }
+
+  /// Creates a button for selecting a specific time range for the graph.
+  ///
+  /// This method creates an `OutlinedButton` with the provided text label
+  /// and associates it with the specified `GraphInterval` enum value. Clicking
+  /// the button triggers the following actions:
+  ///   1. Calls the `_loadGraphData` function to asynchronously load graph data
+  ///      for the corresponding `interval`.
+  ///   2. Calls `selectButton` to visually select the button based on the
+  ///      `interval.index`.
+  ///
+  /// Parameters:
+  /// * `text` (String): The text to be displayed on the button.
+  /// * `interval` (GraphInterval): The `GraphInterval` enum value representing
+  ///   the time range for the button.
+  ///
+  /// Returns: A `Widget` representing the time range button.
+  Widget _timeRangeButton(String text, GraphInterval interval) {
+    return OutlinedButton(
+      onPressed: () async {
+        setState(() {
+          _isGraphLoading = true;
+        });
+
+        await _loadGraphData(interval);
+        selectButton(interval.index);
+      },
+      style: OutlinedButton.styleFrom(
+        foregroundColor: const Color(0xFF0AA061),
+        side: selectedIndex == interval.index
+            ? const BorderSide(color: Colors.white, width: 0)
+            : const BorderSide(color: Colors.black, width: 1.0),
+        backgroundColor:
+            selectedIndex == interval.index ? Colors.green : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      ),
+      child: Text(
+        text,
         style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.normal,
-          color: Color(0xFF0AA061),
+          color: selectedIndex == interval.index ? Colors.white : Colors.black,
         ),
       ),
-      const SizedBox(height: 10),
-      Wrap(
-        spacing: 8.0,
-        children: <Widget>[
-          _timeRangeButton("24h", GraphInterval.LastTwentyFourHours),
-          _timeRangeButton("7d", GraphInterval.LastSevenDays),
-          _timeRangeButton("30d", GraphInterval.LastThirtyDays),
-          _timeRangeButton("Custom", GraphInterval.Custom)
-        ],
-      )
-    ],
-  );
-}
-
-/// Creates a button for selecting a specific time range for the graph.
-///
-/// This method creates an `OutlinedButton` with the provided text label 
-/// and associates it with the specified `GraphInterval` enum value. Clicking 
-/// the button triggers the following actions:
-///   1. Calls the `_loadGraphData` function to asynchronously load graph data 
-///      for the corresponding `interval`.
-///   2. Calls `selectButton` to visually select the button based on the 
-///      `interval.index`.
-///
-/// Parameters:
-/// * `text` (String): The text to be displayed on the button.
-/// * `interval` (GraphInterval): The `GraphInterval` enum value representing 
-///   the time range for the button.
-///
-/// Returns: A `Widget` representing the time range button.
-Widget _timeRangeButton(String text, GraphInterval interval) {
-  return OutlinedButton(
-    onPressed: () async {
-      await _loadGraphData(interval);
-      selectButton(interval.index);
-    },
-    style: OutlinedButton.styleFrom(
-      foregroundColor: const Color(0xFF0AA061),
-      side: selectedIndex == 4
-          ? const BorderSide(color: Colors.white, width: 0)
-          : const BorderSide(color: Colors.black, width: 1.0),
-      backgroundColor: selectedIndex == 4 ? Colors.green : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-    ),
-    child: Text(
-      text,
-      style: TextStyle(
-        color: selectedIndex == 4 ? Colors.white : Colors.black,
-      ),
-    ),
-  );
-}
+    );
+  }
 
   /// Loads graph data for the specified time interval asynchronously.
   ///
@@ -325,6 +337,8 @@ Widget _timeRangeButton(String text, GraphInterval interval) {
     DataTypeDao dataTypeDao = DataTypeDaoImpl();
     List<DataType> dataTypes = await dataTypeDao.getDataTypes();
 
+    graphDataList.clear();
+
     // Build GraphData for each data type
     for (DataType dataType in dataTypes) {
       GraphData graphData = await GraphBuilder()
@@ -334,5 +348,9 @@ Widget _timeRangeButton(String text, GraphInterval interval) {
           .build();
       graphDataList.add(graphData);
     }
+
+    setState(() {
+      _isGraphLoading = false;
+    });
   }
 }

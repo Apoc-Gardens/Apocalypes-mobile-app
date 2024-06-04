@@ -56,26 +56,25 @@ class GraphBuilder {
 
     if (dataType.id == 1) {
       _graphData.gradientColors = [
-        const Color.fromARGB(255, 180, 23, 23),
-        const Color.fromARGB(255, 244, 0, 0),
+        const Color.fromARGB(255, 238, 119, 51),
+        const Color.fromARGB(255, 244, 85, 0),
       ];
     } else if (dataType.id == 2) {
       _graphData.gradientColors = [
-        const Color.fromARGB(255, 216, 155, 0),
-        const Color.fromARGB(255, 226, 196, 28),
+        const Color.fromARGB(255, 0, 186, 164),
+        const Color.fromARGB(255, 0, 144, 127),
       ];
     } else if (dataType.id == 3) {
       _graphData.gradientColors = [
-        const Color.fromARGB(255, 0, 198, 96),
-        const Color.fromARGB(255, 0, 173, 52),
+        const Color.fromARGB(255, 6, 122, 45),
+        const Color.fromARGB(255, 2, 68, 27),
       ];
     } else if (dataType.id == 4) {
       _graphData.gradientColors = [
-        const Color.fromARGB(255, 204, 35, 230),
-        const Color.fromARGB(255, 173, 2, 211),
+        const Color.fromARGB(255, 51, 187, 238),
+        const Color.fromARGB(255, 41, 155, 196),
       ];
     }
-
     return this;
   }
 
@@ -98,7 +97,7 @@ class GraphBuilder {
   }
 
   Future<GraphData> build() async {
-    _populateData();
+    // _populateData();
     if (_graphData.dataType == null) {
       throw Exception('Data type must be set');
     }
@@ -259,7 +258,7 @@ class GraphBuilder {
       int hoursAgo = i;
 
       dataDao.insertData(Data(
-          nodeId: 1,
+          nodeId: _graphData.node!.id ?? 1,
           dataTypeId: 1,
           value: value,
           timestamp: DateTime.now().millisecondsSinceEpoch -
@@ -271,7 +270,7 @@ class GraphBuilder {
       int hoursAgo = i;
 
       dataDao.insertData(Data(
-          nodeId: 1,
+          nodeId: _graphData.node!.id ?? 1,
           dataTypeId: 2,
           value: value,
           timestamp: DateTime.now().millisecondsSinceEpoch -
@@ -283,7 +282,7 @@ class GraphBuilder {
       int hoursAgo = i;
 
       dataDao.insertData(Data(
-          nodeId: 1,
+          nodeId: _graphData.node!.id ?? 1,
           dataTypeId: 3,
           value: value,
           timestamp: DateTime.now().millisecondsSinceEpoch -
@@ -295,7 +294,7 @@ class GraphBuilder {
       int hoursAgo = i;
 
       dataDao.insertData(Data(
-          nodeId: 1,
+          nodeId: _graphData.node!.id ?? 1,
           dataTypeId: 4,
           value: value,
           timestamp: DateTime.now().millisecondsSinceEpoch -

@@ -4,6 +4,7 @@ import 'package:mybluetoothapp/models/graph_data.dart';
 
 class GraphCard extends StatelessWidget {
   final GraphData graphData;
+
   const GraphCard({super.key, required this.graphData});
 
   @override
@@ -11,9 +12,7 @@ class GraphCard extends StatelessWidget {
     return Card.outlined(
         color: Colors.white,
         child: Padding(
-            padding: const EdgeInsets.all(
-              20.0,
-            ),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,10 +28,13 @@ class GraphCard extends StatelessWidget {
                   thickness: 1,
                   color: Colors.grey,
                 ),
-                AspectRatio(
-                  aspectRatio: 4,
-                  child: LineChart(graph()),
-                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: AspectRatio(
+                    aspectRatio: 2,
+                    child: LineChart(graph()),
+                  ),
+                )
               ],
             )));
   }
@@ -57,7 +59,7 @@ class GraphCard extends StatelessWidget {
       lineBarsData: [
         LineChartBarData(
           spots: graphData.dataSpots!,
-          isCurved: true,
+          isCurved: false,
           gradient: LinearGradient(
             colors: graphData.gradientColors ??
                 const [Colors.blue, Colors.blueAccent],
@@ -66,12 +68,18 @@ class GraphCard extends StatelessWidget {
           isStrokeCapRound: true,
           dotData: const FlDotData(
             show: true,
+
           ),
           belowBarData: BarAreaData(
-            show: false,
+            show: true,
             gradient: LinearGradient(
-              colors: graphData.gradientColors ??
-                  const [Colors.blue, Colors.blueAccent],
+              colors: graphData.gradientColors
+              ?.map((color) => color.withOpacity(0.2))
+              .toList()
+                  ??
+                  const [Colors.blue, Colors.blueAccent]
+                      .map((color) => color.withOpacity(0.3))
+                      .toList(),
             ),
           ),
         ),

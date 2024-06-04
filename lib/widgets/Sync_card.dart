@@ -204,7 +204,7 @@ class _SyncCardState extends State<SyncCard> {
                           ],
                         ),
                         Text(
-                          'last sync: ${DateFormat('HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(lastSync))}',
+                          'last sync: ${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(lastSync))}',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.normal,

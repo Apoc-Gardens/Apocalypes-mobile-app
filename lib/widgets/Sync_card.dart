@@ -28,7 +28,7 @@ class _SyncCardState extends State<SyncCard> {
   Future<void> getDevices() async {
     List<Receiver> devices = await databaseHelper.getAllDevices();
     receiverDevice = devices[0];
-    lastSync = receiverDevice.lastSynced!;
+    // lastSync = receiverDevice.lastSynced!;
     print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
     scanForDevice(receiverDevice.mac);
   }

@@ -22,7 +22,7 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
   @override
   void initState() {
     super.initState();
-    _loadGraphData(GraphInterval.twentyFourHoursBefore);
+    _loadGraphData(GraphInterval.LastTwentyFourHours);
   }
 
   @override
@@ -59,9 +59,9 @@ class _SensorPropertiesPageState extends State<SensorPropertiesPage> {
           mainAxisAlignment: MainAxisAlignment.start,
 
           children: <Widget>[
-            _timeRangeButton("24h", GraphInterval.twentyFourHoursBefore),
-            _timeRangeButton("7d", GraphInterval.lastSevenDays),
-            _timeRangeButton("30d", GraphInterval.lastThirtyDays)
+            _timeRangeButton("24h", GraphInterval.LastTwentyFourHours),
+            _timeRangeButton("7d", GraphInterval.LastSevenDays),
+            _timeRangeButton("30d", GraphInterval.LastThirtyDays)
           ],
         )
       ],

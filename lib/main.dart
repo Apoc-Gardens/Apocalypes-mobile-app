@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider(create: (_) => BluetoothProvider()),
             ],
             child: MaterialApp(
-              initialRoute: receiverCount == 0 ? '/properties' : '/sensors',
+              initialRoute: receiverCount == 0 ? '/' : '/sensors',
               routes: {
                 '/': (context) => Welcome(),
                 '/scan': (context) => ScanDevices(),

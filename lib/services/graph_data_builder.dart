@@ -17,29 +17,29 @@ class GraphBuilder {
 
   GraphBuilder setGraphInterval(GraphInterval interval) {
     switch (interval) {
-      case GraphInterval.twentyFourHoursBefore:
+      case GraphInterval.LastTwentyFourHours:
         _graphData
           ..startTime = DateTime.now().subtract(const Duration(days: 1))
           ..endTime = DateTime.now()
-          ..interval = GraphInterval.twentyFourHoursBefore;
+          ..interval = GraphInterval.LastTwentyFourHours;
         break;
 
-      case GraphInterval.lastSevenDays:
+      case GraphInterval.LastSevenDays:
         _graphData
           ..startTime = DateTime.now().subtract(const Duration(days: 7))
           ..endTime = DateTime.now()
-          ..interval = GraphInterval.lastSevenDays;
+          ..interval = GraphInterval.LastSevenDays;
         break;
 
-      case GraphInterval.lastThirtyDays:
+      case GraphInterval.LastThirtyDays:
         _graphData
           ..startTime = DateTime.now().subtract(const Duration(days: 30))
           ..endTime = DateTime.now()
-          ..interval = GraphInterval.lastThirtyDays;
+          ..interval = GraphInterval.LastThirtyDays;
         break;
 
-      case GraphInterval.custom:
-        _graphData.interval = GraphInterval.custom;
+      case GraphInterval.Custom:
+        _graphData.interval = GraphInterval.Custom;
         _isCustomInterval = true;
         break;
     }
@@ -98,6 +98,7 @@ class GraphBuilder {
   }
 
   Future<GraphData> build() async {
+    _populateData();
     if (_graphData.dataType == null) {
       throw Exception('Data type must be set');
     }
@@ -118,9 +119,8 @@ class GraphBuilder {
 
     final dataList = await _retrieveDataPointsFromDatabaseAndFilter();
     _graphData.dataSpots = dataList
-        .map((data) => FlSpot(
-          data.timestamp.toDouble()
-          , double.parse(data.value.toStringAsFixed(2))))
+        .map((data) => FlSpot(data.timestamp.toDouble(),
+            double.parse(data.value.toStringAsFixed(2))))
         .toList();
 
     return _graphData;
@@ -154,29 +154,29 @@ class GraphBuilder {
     int timeIncrements;
     int maxTimeValue;
 
-    switch (_graphData.interval ?? GraphInterval.twentyFourHoursBefore) {
-      case GraphInterval.twentyFourHoursBefore:
+    switch (_graphData.interval ?? GraphInterval.LastSevenDays) {
+      case GraphInterval.LastTwentyFourHours:
         timeStamp = DateTime.now()
             .subtract(const Duration(days: 1))
             .millisecondsSinceEpoch;
         timeIncrements = const Duration(hours: 1).inMilliseconds;
         maxTimeValue = 24;
         break;
-      case GraphInterval.lastSevenDays:
+      case GraphInterval.LastSevenDays:
         timeStamp = DateTime.now()
             .subtract(const Duration(days: 7))
             .millisecondsSinceEpoch;
         timeIncrements = const Duration(days: 1).inMilliseconds;
         maxTimeValue = 7;
         break;
-      case GraphInterval.lastThirtyDays:
+      case GraphInterval.LastThirtyDays:
         timeStamp = DateTime.now()
             .subtract(const Duration(days: 30))
             .millisecondsSinceEpoch;
         timeIncrements = const Duration(days: 1).inMilliseconds;
         maxTimeValue = 31;
         break;
-      case GraphInterval.custom:
+      case GraphInterval.Custom:
         timeStamp = _graphData.startTime?.millisecondsSinceEpoch ?? 0;
         timeIncrements = const Duration(days: 1).inMilliseconds;
         maxTimeValue =
@@ -232,7 +232,6 @@ class GraphBuilder {
       if (timestamp < minX || minX == 0) {
         minX = timestamp;
       }
-
     }
 
 // Calculate avgY and avgX

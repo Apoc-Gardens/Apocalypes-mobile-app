@@ -1,6 +1,8 @@
+// ignore_for_file: constant_identifier_names
+
 enum GraphInterval {
-  twentyFourHoursBefore,
-  lastSevenDays,
-  lastThirtyDays,
-  custom,
+  LastTwentyFourHours,
+  LastSevenDays,
+  LastThirtyDays,
+  Custom,
 }

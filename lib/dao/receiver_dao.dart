@@ -1,0 +1,30 @@
+import 'package:sqflite/sqflite.dart';
+import '../services/database_service.dart';
+import '../models/receiver.dart';
+
+class ReceiverDao {
+  final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
+
+  Future<int> insertReceiverDevice(Receiver receiver) async {
+    Database db = await _databaseHelper.database;
+    return await db.insert('receivers', receiver.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> updateLastSync(int id, int timestamp) async {
+    Database db = await _databaseHelper.database;
+    return await db.rawUpdate('UPDATE receivers SET lastsynced = ? WHERE id = ?', [timestamp, id]);
+  }
+
+  Future<int?> getReceiverCount() async {
+    Database db = await _databaseHelper.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM receivers'));
+  }
+
+  Future<List<Receiver>> getAllDevices() async {
+    Database db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query('receivers');
+    return List.generate(maps.length, (i) {
+      return Receiver.fromMap(maps[i]);
+    });
+  }
+}

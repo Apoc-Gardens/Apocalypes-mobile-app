@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:mybluetoothapp/navigation/side_menu.dart';
 import '../services/database_service.dart';
 
 class ScanDevices extends StatefulWidget {
@@ -82,8 +83,9 @@ class _ScanDevicesState extends State<ScanDevices> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bluetooth Devices'),
+        title: Text('Bluetooth Devices'),
       ),
+      drawer: SideMenu(),
       body: ListView.builder(
         itemCount: devicesList.length,
         itemBuilder: (context, index) {
@@ -97,11 +99,11 @@ class _ScanDevicesState extends State<ScanDevices> {
                 connectToDevice(device.device);
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF0AA061), side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                foregroundColor: Color(0xFF0AA061), side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0), // Border radius
                 ),
-                padding: const EdgeInsets.all(6.0), // Padding
+                padding: EdgeInsets.all(6.0), // Padding
               ),
               child: Text('Connect and save'),
             ),
@@ -110,9 +112,6 @@ class _ScanDevicesState extends State<ScanDevices> {
       ),
     );
   }
-
-
-
 
   @override
   void dispose() {

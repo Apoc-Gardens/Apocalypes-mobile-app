@@ -1,5 +1,6 @@
-# Apoc Garden's Mobile Application
-This repository contains the Apoc Garden's Flutter application source code for open source usage.
+# mybluetoothapp
+
+A new Flutter project.
 
 ## Getting Started
 

@@ -7,7 +7,7 @@ import 'package:mybluetoothapp/pages/sensors.dart';
 import 'package:mybluetoothapp/providers/bluetooth_provider.dart';
 import 'package:mybluetoothapp/test/dbpage.dart';
 import 'package:mybluetoothapp/pages/characteristics.dart';
-import '../services/database_service.dart';
+import 'dao/receiver_dao.dart';
 
 void main() => runApp(MyApp());
 
@@ -17,10 +17,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final ReceiverDao _receiverDao = ReceiverDao();
 
   Future<int> getReceiverCount() async {
-    return await databaseHelper.getReceiverCount() ?? 0;
+    return await _receiverDao.getReceiverCount() ?? 0;
   }
 
   @override

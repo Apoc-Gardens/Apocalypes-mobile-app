@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mybluetoothapp/models/node.dart';
 
-import '../services/database_service.dart';
+import '../dao/data_dao.dart';
+import '../dao/node_dao.dart';
 
 class ViewSensor extends StatefulWidget {
   final Node node;
@@ -14,7 +15,8 @@ class ViewSensor extends StatefulWidget {
 }
 
 class _ViewSensorState extends State<ViewSensor> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final NodeDao _nodeDao = NodeDao();
+  final DataDao _dataDao = DataDao();
   int selectedIndex = 1;
   int noOfData = 0;
   int latestTime = 0;
@@ -40,23 +42,23 @@ class _ViewSensorState extends State<ViewSensor> {
   }
 
   Future<void> dataCount() async {
-    noOfData = await databaseHelper.countData(widget.node.id.toString()) ?? 0;
+    noOfData = await _dataDao.countData(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getLatestTime() async {
-    latestTime = await databaseHelper.latestDataTimeStamp(widget.node.id.toString()) ?? 0;
+    latestTime = await _dataDao.latestDataTimeStamp(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getOldestTime() async {
-    oldestTime = await databaseHelper.oldestDataTimeStamp(widget.node.id.toString()) ?? 0;
+    oldestTime = await _dataDao.oldestDataTimeStamp(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getFilteredData(String tableId, int startTime, int endTime) async {
-    data = await databaseHelper.getDataByNodeTime(tableId, startTime, endTime);
+    data = await _dataDao.getDataByNodeTime(tableId, startTime, endTime);
   }
 
   void updateName(newName) async{
-    int response = await databaseHelper.updateNodeName(widget.node.id.toString(), newName);
+    int response = await _nodeDao.updateNodeName(widget.node.id.toString(), newName);
     if(response > 0){
       setState(() {
         nodeName = newName;
@@ -67,7 +69,7 @@ class _ViewSensorState extends State<ViewSensor> {
   }
 
   void updateDescription(newDescription) async{
-    int response = await databaseHelper.updateNodeDescription(widget.node.id.toString(), newDescription);
+    int response = await _nodeDao.updateNodeDescription(widget.node.id.toString(), newDescription);
     if(response > 0){
       setState(() {
         nodeDescription = newDescription;

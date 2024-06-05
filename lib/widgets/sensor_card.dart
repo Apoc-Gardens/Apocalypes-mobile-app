@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/models/node.dart';
 import 'package:mybluetoothapp/pages/view_sensor.dart';
-import 'package:mybluetoothapp/services/database_service.dart';
 import 'package:intl/intl.dart';
-
+import '../dao/data_dao.dart';
 import '../models/data.dart';
 
 class SensorCard extends StatefulWidget {
@@ -15,7 +14,7 @@ class SensorCard extends StatefulWidget {
 }
 
 class _SensorCardState extends State<SensorCard> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final DataDao _dataDao = DataDao();
   int noOfData = 0;
   int latestTime = 0;
   late String temperature = '0';
@@ -37,15 +36,15 @@ class _SensorCardState extends State<SensorCard> {
   }
 
   Future<void> dataCount() async {
-    noOfData = await databaseHelper.countData(widget.node.id.toString()) ?? 0;
+    noOfData = await _dataDao.countData(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getLatestTime() async {
-    latestTime =  await databaseHelper.latestDataTimeStamp(widget.node.id.toString()) ?? 0;
+    latestTime =  await _dataDao.latestDataTimeStamp(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getLatestReadings() async{
-    List<Data> latestReadings = await databaseHelper.getLatestReadings(widget.node.id.toString());
+    List<Data> latestReadings = await _dataDao.getLatestReadings(widget.node.id.toString());
     for (Data reading in latestReadings){
       switch(reading.dataTypeId) {
         case 1: {

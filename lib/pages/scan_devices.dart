@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mybluetoothapp/navigation/side_menu.dart';
-import '../services/database_service.dart';
+import '../dao/receiver_dao.dart';
 
 class ScanDevices extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class ScanDevices extends StatefulWidget {
 
 class _ScanDevicesState extends State<ScanDevices> {
   List<ScanResult> devicesList = [];
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final ReceiverDao _receiverDao = ReceiverDao();
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _ScanDevicesState extends State<ScanDevices> {
   }
 
   Future<void> insertReceiverDevice(BluetoothDevice device) async {
-    int response = await databaseHelper.insertReceiverDevice(null, device.platformName, device.remoteId.toString(),null);
+    int response = await _receiverDao.insertReceiverDevice(null, device.platformName, device.remoteId.toString(),null);
     print("db response");
     print(response);
   }

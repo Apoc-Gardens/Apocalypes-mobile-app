@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/navigation/side_menu.dart';
 import 'package:mybluetoothapp/widgets/sync_card.dart';
 import 'package:mybluetoothapp/widgets/sensor_card.dart';
-import 'package:mybluetoothapp/services/database_service.dart';
 import 'package:mybluetoothapp/models/node.dart';
+
+import '../dao/node_dao.dart';
 
 class Sensors extends StatefulWidget {
   const Sensors({super.key});
@@ -13,18 +14,18 @@ class Sensors extends StatefulWidget {
 }
 
 class _SensorsState extends State<Sensors> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final NodeDao _nodeDao = NodeDao();
   late Future<List<Node>> nodesFuture;
 
   @override
   void initState() {
     super.initState();
-    nodesFuture = databaseHelper.getAllNodes();
+    nodesFuture = _nodeDao.getAllNodes();
   }
 
   Future<void> refreshNodes() async {
     setState(() {
-      nodesFuture = databaseHelper.getAllNodes();
+      nodesFuture = _nodeDao.getAllNodes();
     });
   }
 

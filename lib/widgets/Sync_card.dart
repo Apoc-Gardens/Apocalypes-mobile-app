@@ -5,7 +5,6 @@ import 'package:mybluetoothapp/dao/data_dao.dart';
 import 'package:mybluetoothapp/dao/node_dao.dart';
 import 'package:mybluetoothapp/dao/receiver_dao.dart';
 import '../models/receiver.dart';
-import '../services/database_service.dart';
 import 'package:mybluetoothapp/models/node.dart';
 
 class SyncCard extends StatefulWidget {
@@ -16,7 +15,6 @@ class SyncCard extends StatefulWidget {
 }
 
 class _SyncCardState extends State<SyncCard> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
   final ReceiverDao _receiverDao = ReceiverDao();
   final NodeDao _nodeDao = NodeDao();
   final DataDao _dataDao = DataDao();

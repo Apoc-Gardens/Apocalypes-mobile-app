@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/models/receiver.dart';
+import '../models/data.dart';
 import '../models/datatype.dart';
 import '../models/node.dart';
 import '../models/test_table.dart';
 import '../services/database_service.dart';
+import 'package:mybluetoothapp/dao/data_dao.dart';
 
 class dbpage extends StatefulWidget {
   const dbpage({super.key});
@@ -46,6 +48,13 @@ class _dbpageState extends State<dbpage> {
     List<DataType> dataTypes = await databaseHelper.getAllDataTypes();
     for (var dt in dataTypes) {
       print('ID: ${dt.id}, Name: ${dt.name}, Unit: ${dt.unit}');
+    }
+  }
+
+  Future<void> readData() async {
+    List<Data> dataTypes = await databaseHelper.getAllData();
+    for (var dt in dataTypes) {
+      print('ID: ${dt.id}, nodeID: ${dt.nodeId}, dataTypeID: ${dt.dataTypeId}, dataValue: ${dt.value}, timestamp: ${dt.timestamp},');
     }
   }
 
@@ -190,6 +199,25 @@ class _dbpageState extends State<dbpage> {
               ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
             ),
             child: const Text('Read specififc node',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal
+              ),
+            ),
+          ),
+          const SizedBox(height: 20,),
+          ElevatedButton(
+            onPressed: () {
+              readData();
+              //readAllnodes();
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Adjust the value as needed
+              ), backgroundColor: Color(0xFF0AA061), // Use your desired color value
+            ),
+            child: const Text('Read data',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

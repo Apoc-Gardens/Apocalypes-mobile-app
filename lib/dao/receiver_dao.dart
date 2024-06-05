@@ -5,9 +5,9 @@ import '../models/receiver.dart';
 class ReceiverDao {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
 
-  Future<int> insertReceiverDevice(Receiver receiver) async {
+  Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
     Database db = await _databaseHelper.database;
-    return await db.insert('receivers', receiver.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert('receivers', {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<int> updateLastSync(int id, int timestamp) async {

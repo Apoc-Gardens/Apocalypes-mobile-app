@@ -18,6 +18,7 @@ class _SyncCardState extends State<SyncCard> {
   late BluetoothDevice bluetoothDevice;
   int lastSync = 0;
   bool isConnected = false;
+  bool syncInProgress = false;
 
   @override
   void initState() {
@@ -99,6 +100,9 @@ class _SyncCardState extends State<SyncCard> {
         String asciiString = asciiValues(await selectedCharacteristic.read());
         print(asciiString);
         if(asciiString == "ok"){
+          setState(() {
+            syncInProgress = true;
+          });
           while(asciiString != "end"){
             asciiString = asciiValues(await selectedCharacteristic.read());
             if (asciiString != "end") {
@@ -107,6 +111,9 @@ class _SyncCardState extends State<SyncCard> {
               sensordata.add(asciiString);
             }
           }
+          setState(() {
+            syncInProgress = false;
+          });
           print("data to be saved");
           for (List<String> element in listofelements) {
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
@@ -123,11 +130,12 @@ class _SyncCardState extends State<SyncCard> {
             double hum = double.tryParse(element[3]) ?? 0.0;
             double lux = double.tryParse(element[4]) ?? 0.0;
             double soil = double.tryParse(element[5]) ?? 0.0;
+            int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
 
-            await databaseHelper.insertData(nodeId, 1, temp, DateTime.now().millisecondsSinceEpoch); //ToDo: change this insert the timestamp received from the receiver module
-            await databaseHelper.insertData(nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
-            await databaseHelper.insertData(nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
-            await databaseHelper.insertData(nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(nodeId, 1, temp, timestamp); //ToDo: change this insert the timestamp received from the receiver module
+            await databaseHelper.insertData(nodeId, 2, hum, timestamp);
+            await databaseHelper.insertData(nodeId, 3, lux, timestamp);
+            await databaseHelper.insertData(nodeId, 4, soil, timestamp);
             await databaseHelper.updateLastSync(receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
             setState(() {
               lastSync = DateTime.now().millisecondsSinceEpoch;
@@ -203,7 +211,7 @@ class _SyncCardState extends State<SyncCard> {
                               )
                           ],
                         ),
-                        Text(
+                        Text(syncInProgress ? 'Syncing...' :
                           'last sync: ${DateFormat('HH:mm').format(DateTime.fromMillisecondsSinceEpoch(lastSync))}',
                           style: TextStyle(
                             fontSize: 10,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:mybluetoothapp/dao/data_dao.dart';
+import 'package:mybluetoothapp/dao/node_dao.dart';
+import 'package:mybluetoothapp/dao/receiver_dao.dart';
 import '../models/receiver.dart';
 import '../services/database_service.dart';
 import 'package:mybluetoothapp/models/node.dart';
@@ -14,6 +17,9 @@ class SyncCard extends StatefulWidget {
 
 class _SyncCardState extends State<SyncCard> {
   DatabaseHelper databaseHelper = DatabaseHelper();
+  final ReceiverDao _receiverDao = ReceiverDao();
+  final NodeDao _nodeDao = NodeDao();
+  final DataDao _dataDao = DataDao();
   late Receiver receiverDevice;
   late BluetoothDevice bluetoothDevice;
   int lastSync = 0;
@@ -27,7 +33,7 @@ class _SyncCardState extends State<SyncCard> {
   }
 
   Future<void> getDevices() async {
-    List<Receiver> devices = await databaseHelper.getAllDevices();
+    List<Receiver> devices = await _receiverDao.getAllDevices();
     receiverDevice = devices[0];
     lastSync = receiverDevice.lastSynced ?? 0;
     print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
@@ -117,10 +123,10 @@ class _SyncCardState extends State<SyncCard> {
           print("data to be saved");
           for (List<String> element in listofelements) {
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
-            List<Map<String, dynamic>> nodeToBeInserted = await databaseHelper.getNodeById(element[0]);
+            List<Map<String, dynamic>> nodeToBeInserted = await _nodeDao.getNodeById(element[0]);
             if (nodeToBeInserted.isEmpty) {
               Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null);
-              int newNodeId = await databaseHelper.insertNode(newNode);
+              int newNodeId = await _nodeDao.insertNode(newNode);
               nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");
             }
@@ -132,11 +138,11 @@ class _SyncCardState extends State<SyncCard> {
             double soil = double.tryParse(element[5]) ?? 0.0;
             int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
 
-            await databaseHelper.insertData(nodeId, 1, temp, timestamp); //ToDo: change this insert the timestamp received from the receiver module
-            await databaseHelper.insertData(nodeId, 2, hum, timestamp);
-            await databaseHelper.insertData(nodeId, 3, lux, timestamp);
-            await databaseHelper.insertData(nodeId, 4, soil, timestamp);
-            await databaseHelper.updateLastSync(receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
+            await _dataDao.insertData(nodeId, 1, temp, timestamp); //ToDo: change this insert the timestamp received from the receiver module
+            await _dataDao.insertData(nodeId, 2, hum, timestamp);
+            await _dataDao.insertData(nodeId, 3, lux, timestamp);
+            await _dataDao.insertData(nodeId, 4, soil, timestamp);
+            await _receiverDao.updateLastSync(receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
             setState(() {
               lastSync = DateTime.now().millisecondsSinceEpoch;
             });

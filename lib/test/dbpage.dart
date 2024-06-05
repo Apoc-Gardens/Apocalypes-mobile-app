@@ -24,6 +24,8 @@ class _dbpageState extends State<dbpage> {
 
   List<List<String>> data = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
+  DataDao _dataDao = DataDao();
+
 
   Future<void> updateCount() async {
     count = (await databaseHelper.getMax())!;
@@ -52,7 +54,7 @@ class _dbpageState extends State<dbpage> {
   }
 
   Future<void> readData() async {
-    List<Data> dataTypes = await databaseHelper.getAllData();
+    List<Data> dataTypes = await _dataDao.getAllData();
     for (var dt in dataTypes) {
       print('ID: ${dt.id}, nodeID: ${dt.nodeId}, dataTypeID: ${dt.dataTypeId}, dataValue: ${dt.value}, timestamp: ${dt.timestamp},');
     }

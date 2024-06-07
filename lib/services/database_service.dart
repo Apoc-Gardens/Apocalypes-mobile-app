@@ -119,9 +119,10 @@ class DatabaseHelper {
     //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 
-  // Implement methods for CRUD operations here
+  // CRUD operations below have been separated into DAOs, ToDo: remove them later
 
   //CRUD for devices
+
   Future<int> insertReceiverDevice(int? id, String name, String mac, String? lastsynced) async {
     Database db = await instance.database;
     return await db.insert(tableReceivers, {'id': id, 'name': name, 'mac': mac, 'lastsynced': lastsynced}, conflictAlgorithm: ConflictAlgorithm.ignore);

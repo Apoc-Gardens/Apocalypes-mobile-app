@@ -46,7 +46,7 @@ class DataSync {
         if (asciiString == "ok") {
           onSyncStart();
           while (asciiString != "end") {
-            asciiString = asciiValues(await selectedCharacteristic.read());
+            asciiString = asciiValues(await selectedCharacteristic.read()); //parsing starts ToDo: will need to make this a separate function
             if (asciiString != "end") {
               elements = asciiString.split(",");
               listOfElements.add(elements);
@@ -64,7 +64,7 @@ class DataSync {
               nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");
             }
-            int nodeId = nodeToBeInserted[0]['id'] as int;
+            int nodeId = nodeToBeInserted[0]['id'] as int; //parsing end
 
             double temp = double.tryParse(element[2]) ?? 0.0;
             double hum = double.tryParse(element[3]) ?? 0.0;
@@ -72,7 +72,7 @@ class DataSync {
             double soil = double.tryParse(element[5]) ?? 0.0;
             int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
 
-            await dataDao.insertData(nodeId, 1, temp, timestamp); //ToDo: change this insert the timestamp received from the receiver module
+            await dataDao.insertData(nodeId, 1, temp, timestamp);
             await dataDao.insertData(nodeId, 2, hum, timestamp);
             await dataDao.insertData(nodeId, 3, lux, timestamp);
             await dataDao.insertData(nodeId, 4, soil, timestamp);

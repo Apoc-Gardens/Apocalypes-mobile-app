@@ -57,11 +57,11 @@ class _SyncCardState extends State<SyncCard> {
     await DataSync.syncData(bluetoothDevice, _dataDao, _nodeDao, receiverDevice, _receiverDao, () {
       setState(() {
         lastSync = DateTime.now().millisecondsSinceEpoch;
-        syncInProgress = false;
+        syncInProgress = true;
       });
     }, () {
       setState(() {
-        syncInProgress = true;
+        syncInProgress = false;
       });
     });
   }

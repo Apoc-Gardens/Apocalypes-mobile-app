@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mybluetoothapp/navigation/side_menu.dart';
-import 'package:mybluetoothapp/widgets/sync_card.dart';
+import 'package:mybluetoothapp/widgets/sync-card/sync_card.dart';
 import 'package:mybluetoothapp/widgets/sensor_card.dart';
 import 'package:mybluetoothapp/models/node.dart';
 

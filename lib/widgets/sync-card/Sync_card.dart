@@ -166,7 +166,7 @@ class _SyncCardState extends State<SyncCard> {
   void dispose() {
     super.dispose();
     FlutterBluePlus.stopScan();
-    bluetoothDevice.disconnect();
+    //bluetoothDevice.disconnect();
   }
 }
 

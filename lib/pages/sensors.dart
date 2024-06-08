@@ -60,7 +60,7 @@ class _SensorsState extends State<Sensors> {
             future: receiversFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(), heightFactor: 1, widthFactor: 1,);
+                return const Center(child: CircularProgressIndicator(), heightFactor: 1, widthFactor: 1);
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -87,38 +87,53 @@ class _SensorsState extends State<Sensors> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: refreshNodes,
-                child: FutureBuilder<List<Node>>(
-                  future: nodesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No sensors found'));
-                    } else {
-                      List<Node> nodes = snapshot.data!;
-                      return ListView.builder(
-                        itemCount: nodes.length,
-                        itemBuilder: (context, index) {
-                          return SensorCard(node: nodes[index]);
+      body: FutureBuilder<List<Receiver>>(
+        future: receiversFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No receiver devices saved'));
+          } else if (selectedReceiver == null) {
+            return const Center(child: Text('Please select a receiver device'));
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: refreshNodes,
+                      child: FutureBuilder<List<Node>>(
+                        future: nodesFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const Center(child: Text('No sensors found'));
+                          } else {
+                            List<Node> nodes = snapshot.data!;
+                            return ListView.builder(
+                              itemCount: nodes.length,
+                              itemBuilder: (context, index) {
+                                return SensorCard(node: nodes[index]);
+                              },
+                            );
+                          }
                         },
-                      );
-                    }
-                  },
-                ),
+                      ),
+                    ),
+                  ),
+                  SyncCard(),
+                ],
               ),
-            ),
-            SyncCard(),
-          ],
-        ),
+            );
+          }
+        },
       ),
     );
   }

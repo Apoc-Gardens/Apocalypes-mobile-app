@@ -23,6 +23,7 @@ class DatabaseHelper {
   static const nodeId = 'nid';
   static const nodeName = 'name';
   static const nodeDescription = 'description';
+  static const nodeReceiverId = 'receiverid';
 
   static const tableDataTypes = 'datatypes';
   static const dataTypeId = 'id';
@@ -78,7 +79,9 @@ class DatabaseHelper {
         $nodeTableId INTEGER PRIMARY KEY AUTOINCREMENT,
         $nodeId TEXT NOT NULL UNIQUE,
         $nodeName TEXT NOT NULL,
-        $nodeDescription TEXT
+        $nodeDescription TEXT,
+        $nodeReceiverId INTEGER,
+        FOREIGN KEY ($nodeTableId) REFERENCES $tableReceivers ($receiverTableId) ON DELETE CASCADE,
       )
     ''');
 

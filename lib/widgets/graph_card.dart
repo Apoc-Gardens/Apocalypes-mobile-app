@@ -1,6 +1,8 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/models/graph_data.dart';
+import 'package:path/path.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../models/graph_data.dart';
 
 class GraphCard extends StatelessWidget {
   final GraphData graphData;
@@ -12,7 +14,8 @@ class GraphCard extends StatelessWidget {
     return Card.outlined(
         color: Colors.white,
         child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding:
+                const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,62 +31,29 @@ class GraphCard extends StatelessWidget {
                   thickness: 1,
                   color: Colors.grey,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: AspectRatio(
-                    aspectRatio: 2,
-                    child: LineChart(graph()),
-                  ),
-                )
+                AspectRatio(aspectRatio: 3 / 2, child: graph())
               ],
             )));
   }
 
-  LineChartData graph() {
-    return LineChartData(
-      gridData: const FlGridData(
-        show: false,
-      ),
-      lineTouchData: const LineTouchData(
-        enabled: true,
-        touchTooltipData: LineTouchTooltipData(),
-      ),
-      titlesData: const FlTitlesData(show: false),
-      borderData: FlBorderData(
-        show: false,
-      ),
-      minX: graphData.minX,
-      maxX: graphData.maxX,
-      minY: graphData.minY,
-      maxY: graphData.maxY,
-      lineBarsData: [
-        LineChartBarData(
-          spots: graphData.dataSpots!,
-          isCurved: false,
-          gradient: LinearGradient(
-            colors: graphData.gradientColors ??
-                const [Colors.blue, Colors.blueAccent],
-          ),
-          barWidth: 4,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: true,
-
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: graphData.gradientColors
-              ?.map((color) => color.withOpacity(0.2))
-              .toList()
-                  ??
-                  const [Colors.blue, Colors.blueAccent]
-                      .map((color) => color.withOpacity(0.3))
-                      .toList(),
-            ),
-          ),
-        ),
-      ],
-    );
+  SfCartesianChart graph() {
+    return SfCartesianChart(
+        primaryXAxis: DateTimeAxis(),
+        primaryYAxis: NumericAxis(),
+        zoomPanBehavior: ZoomPanBehavior(enablePinching: true),
+        tooltipBehavior: TooltipBehavior(
+            enable: true,
+            header: graphData.dataType?.name,
+            format: 'point.x: point.y${graphData.dataType?.unit}'),
+        series: <CartesianSeries>[
+          SplineSeries<DataSpots, DateTime>(
+              dataSource: graphData.dataSpots,
+              xValueMapper: (DataSpots data, _) => data.x,
+              yValueMapper: (DataSpots data, _) => data.y,
+              width: 3.0,
+              splineType: SplineType.monotonic,
+              markerSettings: const MarkerSettings(isVisible: true),
+              enableTooltip: true),
+        ]);
   }
 }

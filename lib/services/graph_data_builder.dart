@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:mybluetoothapp/dao/data_dao.dart';
 import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
@@ -97,7 +96,6 @@ class GraphBuilder {
   }
 
   Future<GraphData> build() async {
-    // _populateData();
     if (_graphData.dataType == null) {
       throw Exception('Data type must be set');
     }
@@ -118,9 +116,11 @@ class GraphBuilder {
 
     final dataList = await _retrieveDataPointsFromDatabaseAndFilter();
     _graphData.dataSpots = dataList
-        .map((data) => FlSpot(data.timestamp.toDouble(),
+        .map((data) => DataSpots(
+            DateTime.fromMillisecondsSinceEpoch(data.timestamp),
             double.parse(data.value.toStringAsFixed(2))))
-        .toList();
+        .toList()
+        .cast<DataSpots>();
 
     return _graphData;
   }

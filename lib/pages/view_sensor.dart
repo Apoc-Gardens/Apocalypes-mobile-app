@@ -71,7 +71,7 @@ class _ViewSensorState extends State<ViewSensor> {
     data = await databaseHelper.getDataByNodeTime(tableId, startTime, endTime);
   }
 
-  void updateName(newName) async {
+  Future<void> updateName(newName) async {
     int response =
         await databaseHelper.updateNodeName(widget.node.id.toString(), newName);
     if (response > 0) {
@@ -83,7 +83,7 @@ class _ViewSensorState extends State<ViewSensor> {
     }
   }
 
-  void updateDescription(newDescription) async {
+  Future<void> updateDescription(newDescription) async {
     int response = await databaseHelper.updateNodeDescription(
         widget.node.id.toString(), newDescription);
     if (response > 0) {
@@ -101,11 +101,11 @@ class _ViewSensorState extends State<ViewSensor> {
     });
   }
 
-  void showEditDialog(
-      String title, String initialValue, Function(String) onSave) {
+  Future<void> showEditDialog(
+      String title, String initialValue, Function(String) onSave) async{
     TextEditingController controller =
         TextEditingController(text: initialValue);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -132,9 +132,9 @@ class _ViewSensorState extends State<ViewSensor> {
                   const Text('Cancel', style: TextStyle(color: Colors.green)),
             ),
             TextButton(
-              onPressed: () {
-                onSave(controller.text);
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await onSave(controller.text);
+                  Navigator.of(context).pop();
               },
               child: const Text('Save', style: TextStyle(color: Colors.green)),
             ),
@@ -144,87 +144,40 @@ class _ViewSensorState extends State<ViewSensor> {
     );
   }
 
+  void onIntervalSelected(DateTime startDate, DateTime endDate) async {
+    await getFilteredData(widget.node.id.toString(),
+        startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: () async {
+            await showEditDialog('Name', widget.node.name, (newValue) {
+               updateName(newValue);
+            });
+          },
+          child: Text(
+            nodeName,
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'inter',
+            ),
+          ),
+        ),
+        bottom: _nodeHeader(context),
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
-        minimum: const EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0, bottom: 10.0),
+        minimum: const EdgeInsets.only(
+             top: 10.0, left: 15.0, right: 15.0, bottom: 10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const BackButton(),
-                GestureDetector(
-                  onTap: () {
-                    showEditDialog('Name', widget.node.name, (newValue) {
-                      updateName(newValue);
-                    });
-                  },
-                  child: Text(
-                    nodeName,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'inter',
-                    ),
-                  ),
-                ),
-                Text(widget.node.id.toString()),
-              ],
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                showEditDialog('Description', widget.node.description ?? '',
-                    (newValue) {
-                  updateDescription(newValue);
-                });
-              },
-              child: Text(
-                nodeDescription,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Last Update'),
-                    Text(DateFormat('HH:mm:ss').format(
-                        DateTime.fromMillisecondsSinceEpoch(latestTime))),
-                  ],
-                ),
-                const SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('First Update'),
-                    Text(DateFormat('HH:mm:ss').format(
-                        DateTime.fromMillisecondsSinceEpoch(oldestTime))),
-                  ],
-                ),
-                const SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('No. Data'),
-                    Text(noOfData.toString()),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _timeRangeSelector(),
-            const SizedBox(height: 12),
             Expanded(
               child: _isGraphLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -240,6 +193,70 @@ class _ViewSensorState extends State<ViewSensor> {
           ],
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _nodeHeader(BuildContext context){
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(160.0),
+      child:
+          Padding(
+            padding: const EdgeInsets.only( left: 20, right: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () {
+                    showEditDialog('Description', widget.node.description ?? '',
+                            (newValue) async{
+                          await updateDescription(newValue);
+                        });
+                  },
+                  child: Text(
+                    nodeDescription,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Last Update'),
+                        Text(DateFormat('HH:mm:ss').format(
+                            DateTime.fromMillisecondsSinceEpoch(latestTime))),
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('First Update'),
+                        Text(DateFormat('HH:mm:ss').format(
+                            DateTime.fromMillisecondsSinceEpoch(oldestTime))),
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('No. Data'),
+                        Text(noOfData.toString()),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _timeRangeSelector(),
+              ],
+            ) ,
+          )
     );
   }
 
@@ -296,11 +313,22 @@ class _ViewSensorState extends State<ViewSensor> {
   Widget _timeRangeButton(String text, GraphInterval interval) {
     return OutlinedButton(
       onPressed: () async {
-        setState(() {
-          _isGraphLoading = true;
-        });
+        if (interval == GraphInterval.Custom) {
+          final DateTimeRange? newDateRange = await showDateRangePicker(
+            context: context,
+            initialDateRange: DateTimeRange(
+              start: DateTime(2024, 06, 09).subtract(const Duration(days: 27)),
+              end: DateTime.now(),
+            ),
+            firstDate: DateTime(2022, 06, 09),
+            lastDate: DateTime.now(),
+            helpText: 'Select a date range',
+          );
 
-        await _loadGraphData(interval);
+          await _loadCustomGraphData(newDateRange!.start, newDateRange.end);
+        } else {
+          await _loadGraphData(interval);
+        }
         selectButton(interval.index);
       },
       style: OutlinedButton.styleFrom(
@@ -333,6 +361,10 @@ class _ViewSensorState extends State<ViewSensor> {
   ///
   /// Returns: A `Future<void>` that completes when the graph data has been loaded.
   Future<void> _loadGraphData(GraphInterval interval) async {
+    setState(() {
+      _isGraphLoading = true;
+    });
+
     // Get all data types
     DataTypeDao dataTypeDao = DataTypeDaoImpl();
     List<DataType> dataTypes = await dataTypeDao.getDataTypes();
@@ -344,6 +376,35 @@ class _ViewSensorState extends State<ViewSensor> {
       GraphData graphData = await GraphBuilder()
           .setNode(widget.node)
           .setGraphInterval(interval)
+          .setDataType(dataType)
+          .build();
+      graphDataList.add(graphData);
+    }
+
+    setState(() {
+      _isGraphLoading = false;
+    });
+  }
+
+  Future<void> _loadCustomGraphData(
+      DateTime startDate, DateTime endTime) async {
+    setState(() {
+      _isGraphLoading = true;
+    });
+
+    // Get all data types
+    DataTypeDao dataTypeDao = DataTypeDaoImpl();
+    List<DataType> dataTypes = await dataTypeDao.getDataTypes();
+
+    graphDataList.clear();
+
+    // Build GraphData for each data type
+    for (DataType dataType in dataTypes) {
+      GraphData graphData = await GraphBuilder()
+          .setNode(widget.node)
+          .setGraphInterval(GraphInterval.Custom)
+          .setStartTime(startDate)
+          .setEndTime(endTime)
           .setDataType(dataType)
           .build();
       graphDataList.add(graphData);

@@ -28,13 +28,18 @@ class _SideMenuState extends State<SideMenu> {
               onTap: () => Navigator.pushNamed(context, '/scan'),
             ),
             ListTile(
-              leading: Icon(Icons.device_hub),
+              leading: Icon(Icons.perm_device_info),
+              title: Text('Devices'),
+            ),
+            ListTile(
+              leading: Icon(Icons.device_thermostat),
               title: Text('Sensors'),
                 onTap: () => Navigator.pushNamed(context, '/sensors')
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+                leading: Icon(Icons.data_object),
+                title: Text('testpage'),
+                onTap: () => Navigator.pushNamed(context, '/test')
             ),
           ],
         ),

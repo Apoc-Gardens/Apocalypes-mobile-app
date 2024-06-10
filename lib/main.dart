@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:mybluetoothapp/pages/landing_page.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
 import 'package:mybluetoothapp/pages/sensors.dart';
-import 'package:mybluetoothapp/providers/bluetooth_provider.dart';
+import 'package:mybluetoothapp/providers/receivers_provider.dart';
 import 'package:mybluetoothapp/test/dbpage.dart';
 import 'package:mybluetoothapp/pages/characteristics.dart';
 import 'dao/receiver_dao.dart';
@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
           final receiverCount = snapshot.data ?? 0;
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => BluetoothProvider()),
+              ChangeNotifierProvider(create: (_) => ReceiversProvider()),
             ],
             child: MaterialApp(
               initialRoute: receiverCount == 0 ? '/' : '/sensors',

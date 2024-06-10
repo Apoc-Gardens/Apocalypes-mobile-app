@@ -116,7 +116,7 @@ class _SensorCardState extends State<SensorCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Last Update'),
-                      Text(DateFormat('dd-mm-yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(latestTime)))
+                      Text(DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(latestTime)))
                     ],
                   ),
                   SizedBox(width: 20,),

@@ -5,7 +5,6 @@ import 'package:mybluetoothapp/dao/data_dao.dart';
 import 'package:mybluetoothapp/dao/node_dao.dart';
 import 'package:mybluetoothapp/dao/receiver_dao.dart';
 import 'package:mybluetoothapp/models/receiver.dart';
-import 'package:mybluetoothapp/utils/bluetooth_utils.dart';
 
 import 'data_sync.dart';
 
@@ -37,20 +36,19 @@ class _SyncCardState extends State<SyncCard> {
     receiverDevice = devices[0];
     lastSync = receiverDevice.lastSynced ?? 0;
     print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
-    scanForDevice(receiverDevice.mac);
+    connectToDevice(receiverDevice.mac);
   }
 
-  void scanForDevice(String MAC) {
-    BluetoothUtils.scanForDevice(MAC, (device) async {
-      bluetoothDevice = device;
-      setState(() async {
-        await bluetoothDevice.connect();
-        setState(() {
-          isConnected = true;
-        });
-        print("Devices connected");
+  Future<void> connectToDevice(String mac) async {
+    bluetoothDevice = BluetoothDevice.fromId(mac);
+    await bluetoothDevice.connect(timeout: const Duration(seconds: 15));
+    if(bluetoothDevice.isConnected){
+      setState(() {
+        isConnected = true;
       });
-    });
+    }else{
+      isConnected = false;
+    }
   }
 
   Future<void> syncData(BluetoothDevice bluetoothDevice) async {
@@ -141,7 +139,7 @@ class _SyncCardState extends State<SyncCard> {
                       syncData(bluetoothDevice);
                     } else {
                       // if not connected
-                      scanForDevice(receiverDevice.mac);
+                      connectToDevice(receiverDevice.mac);
                     }
                   },
                   style: OutlinedButton.styleFrom(

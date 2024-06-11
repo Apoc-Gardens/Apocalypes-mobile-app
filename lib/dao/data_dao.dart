@@ -1,4 +1,4 @@
-import 'package:mybluetoothapp/models/data.dart';
+import '../models/data.dart';
 
 /// Abstract class that defines methods for interacting with data.
 ///
@@ -124,8 +124,8 @@ abstract class DataDao {
   ///
   /// Returns: A `Future<List<Data>>` containing the list of data objects that match the data type ID and fall within the specified time range.
   ///   If no data exists that meets the criteria, an empty list will be returned.
-  Future<List<Data>> getDataInTimeRangeByDataTypeId(
-      int dataTypeId, int startTime, int endTime);
+  Future<List<Data>> getDataInTimeRangeByDataTypeId(int dataTypeId,
+      int startTime, int endTime);
 
   /// Retrieves a list of data objects within a specified time range, filtered by node ID.
   ///
@@ -139,8 +139,8 @@ abstract class DataDao {
   ///
   /// Returns: A `Future<List<Data>>` containing the list of data objects that match the node ID and fall within the specified time range.
   ///   If no data exists that meets the criteria, an empty list will be returned.
-  Future<List<Data>> getDataInTimeRangeByNodeId(
-      int nodeId, int startTime, int endTime);
+  Future<List<Data>> getDataInTimeRangeByNodeId(int nodeId, int startTime,
+      int endTime);
 
   /// Retrieves a list of data objects within a specified time range, filtered by node ID and data type ID.
   ///
@@ -154,6 +154,51 @@ abstract class DataDao {
   ///
   /// Returns: A `Future<List<Data>>` containing the list of data objects that match the node ID, data type ID, and fall within the specified time range.
   /// If no data exists that meets the criteria, an empty list will be returned.
-  Future<List<Data>> getDataInTimeRangeByNodeIdAndDataTypeId(
-      int nodeId, int dataTypeId, int startTime, int endTime);
+  Future<List<Data>> getDataInTimeRangeByNodeIdAndDataTypeId(int nodeId,
+      int dataTypeId, int startTime, int endTime);
+
+  /// Retrieves the latest readings for a specified node ID.
+  ///
+  /// This method fetches the most recent data objects for the given node ID.
+  ///
+  /// Args:
+  ///   nodeId: The ID of the node to filter by.
+  ///
+  /// Returns: A `Future<List<Data>>` containing the list of the latest data objects for the specified node ID.
+  /// If no data exists for the node ID, an empty list will be returned.
+  Future<List<Data>> getLatestReadings(String nodeId);
+
+  /// Counts the number of data objects for a specified data node ID.
+  ///
+  /// This method returns the total count of data objects associated with the given data node ID.
+  ///
+  /// Args:
+  ///   dataNid: The ID of the data node to count the data objects for.
+  ///
+  /// Returns: A `Future<int?>` representing the total count of data objects for the specified data node ID.
+  /// If no data exists for the data node ID, null will be returned.
+  Future<int?> countData(String dataNid);
+
+  /// Retrieves the latest timestamp for data objects associated with a specified data node ID.
+  ///
+  /// This method returns the timestamp of the most recent data object for the given data node ID.
+  ///
+  /// Args:
+  ///   dataNid: The ID of the data node to get the latest timestamp for.
+  ///
+  /// Returns: A `Future<int?>` representing the timestamp (in milliseconds since epoch) of the latest data object for the specified data node ID.
+  /// If no data exists for the data node ID, null will be returned.
+  Future<int?> latestDataTimeStamp(String dataNid);
+
+  /// Retrieves the oldest timestamp for data objects associated with a specified data node ID.
+  ///
+  /// This method returns the timestamp of the oldest data object for the given data node ID.
+  ///
+  /// Args:
+  ///   dataNid: The ID of the data node to get the oldest timestamp for.
+  ///
+  /// Returns: A `Future<int?>` representing the timestamp (in milliseconds since epoch) of the oldest data object for the specified data node ID.
+  /// If no data exists for the data node ID, null will be returned.
+  Future<int?> oldestDataTimeStamp(String dataNid);
 }
+

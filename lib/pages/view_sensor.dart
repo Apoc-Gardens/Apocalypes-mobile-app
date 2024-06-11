@@ -1,7 +1,10 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mybluetoothapp/dao/data_type_dao.dart';
 import 'package:mybluetoothapp/daoImpl/data_type_dao_impl.dart';
+import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
 import 'package:mybluetoothapp/models/graph_data.dart';
 import 'package:mybluetoothapp/models/graph_interval.dart';
@@ -9,7 +12,8 @@ import 'package:mybluetoothapp/models/node.dart';
 import 'package:mybluetoothapp/services/graph_data_builder.dart';
 import 'package:mybluetoothapp/widgets/graph_card.dart';
 
-import '../services/database_service.dart';
+import '../dao/data_dao.dart';
+import '../dao/node_dao.dart';
 
 class ViewSensor extends StatefulWidget {
   final Node node;
@@ -21,18 +25,18 @@ class ViewSensor extends StatefulWidget {
 }
 
 class _ViewSensorState extends State<ViewSensor> {
-  bool _isGraphLoading = true;
-
-  List<GraphData> graphDataList = [];
-  DatabaseHelper databaseHelper = DatabaseHelper();
-  int selectedIndex = GraphInterval.LastTwentyFourHours.index;
+  final NodeDao _nodeDao = NodeDao();
+  final DataDao _dataDao = DataDaoImpl();
+  int selectedIndex = 1;
   int noOfData = 0;
   int latestTime = 0;
   int oldestTime = 0;
   late List<Map<String, dynamic>> data;
+  List<GraphData> graphDataList = [];
   DateTime now = DateTime.now(); // Get the current time
   late String nodeName;
   late String nodeDescription;
+  bool _isGraphLoading = true;
 
   @override
   void initState() {
@@ -51,30 +55,24 @@ class _ViewSensorState extends State<ViewSensor> {
   }
 
   Future<void> dataCount() async {
-    noOfData = await databaseHelper.countData(widget.node.id.toString()) ?? 0;
+    noOfData = await _dataDao.countData(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getLatestTime() async {
-    latestTime =
-        await databaseHelper.latestDataTimeStamp(widget.node.id.toString()) ??
-            0;
+    latestTime = await _dataDao.latestDataTimeStamp(widget.node.id.toString()) ?? 0;
   }
 
   Future<void> getOldestTime() async {
-    oldestTime =
-        await databaseHelper.oldestDataTimeStamp(widget.node.id.toString()) ??
-            0;
+    oldestTime = await _dataDao.oldestDataTimeStamp(widget.node.id.toString()) ?? 0;
   }
 
-  Future<void> getFilteredData(
-      String tableId, int startTime, int endTime) async {
-    data = await databaseHelper.getDataByNodeTime(tableId, startTime, endTime);
+  Future<void> getFilteredData(int nodeId, int startTime, int endTime) async {
+    data = (await _dataDao.getDataInTimeRangeByNodeId(nodeId, startTime, endTime)).cast<Map<String, dynamic>>();
   }
 
-  updateName(newName) async {
-    int response =
-        await databaseHelper.updateNodeName(widget.node.id.toString(), newName);
-    if (response > 0) {
+  void updateName(newName) async{
+    int response = await _nodeDao.updateNodeName(widget.node.id.toString(), newName);
+    if(response > 0){
       setState(() {
         nodeName = newName;
       });
@@ -83,10 +81,9 @@ class _ViewSensorState extends State<ViewSensor> {
     }
   }
 
-  updateDescription(newDescription) async {
-    int response = await databaseHelper.updateNodeDescription(
-        widget.node.id.toString(), newDescription);
-    if (response > 0) {
+  void updateDescription(newDescription) async{
+    int response = await _nodeDao.updateNodeDescription(widget.node.id.toString(), newDescription);
+    if(response > 0){
       setState(() {
         nodeDescription = newDescription;
       });
@@ -145,7 +142,7 @@ class _ViewSensorState extends State<ViewSensor> {
   }
 
   void onIntervalSelected(DateTime startDate, DateTime endDate) async {
-    await getFilteredData(widget.node.id.toString(),
+    await getFilteredData(widget.node.id,
         startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch);
     setState(() {});
   }
@@ -157,7 +154,7 @@ class _ViewSensorState extends State<ViewSensor> {
         title: GestureDetector(
           onTap: () async {
             await showEditDialog('Name', widget.node.name, (newValue) async {
-               await updateName(newValue);
+              updateName(newValue);
             });
           },
           child: Text(
@@ -210,7 +207,7 @@ class _ViewSensorState extends State<ViewSensor> {
                   onTap: () async {
                     await showEditDialog('Description', widget.node.description ?? '',
                             (newValue) async{
-                          await updateDescription(newValue);
+                          updateDescription(newValue);
                         });
                   },
                   child: Text(

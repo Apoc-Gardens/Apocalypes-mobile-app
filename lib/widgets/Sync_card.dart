@@ -29,11 +29,12 @@ class _SyncCardState extends State<SyncCard> {
     List<Receiver> devices = await databaseHelper.getAllDevices();
     receiverDevice = devices[0];
     lastSync = receiverDevice.lastSynced ?? 0;
-    print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
+    print(
+        'ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
     scanForDevice(receiverDevice.mac);
   }
 
-  void scanForDevice(String MAC){
+  void scanForDevice(String MAC) {
     FlutterBluePlus.scanResults.listen((results) {
       for (ScanResult result in results) {
         if (result.device.remoteId.toString() == receiverDevice.mac) {
@@ -49,15 +50,21 @@ class _SyncCardState extends State<SyncCard> {
         }
       }
     });
-    FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')], timeout: const Duration(seconds: 10));
+    FlutterBluePlus.startScan(
+        withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')],
+        timeout: const Duration(seconds: 10));
   }
 
-  Future<BluetoothCharacteristic?> getCharacteristic(BluetoothDevice bluetoothDevice, Guid serviceUuid, Guid characteristicUuid) async {
+  Future<BluetoothCharacteristic?> getCharacteristic(
+      BluetoothDevice bluetoothDevice,
+      Guid serviceUuid,
+      Guid characteristicUuid) async {
     List<BluetoothService> services = await bluetoothDevice.discoverServices();
 
     for (BluetoothService service in services) {
       if (service.uuid == serviceUuid) {
-        for (BluetoothCharacteristic characteristic in service.characteristics) {
+        for (BluetoothCharacteristic characteristic
+            in service.characteristics) {
           if (characteristic.uuid == characteristicUuid) {
             return characteristic;
           }
@@ -71,23 +78,25 @@ class _SyncCardState extends State<SyncCard> {
     // Find the desired service and characteristic
     final serviceUuid = Guid("8292fed4-e037-4dd7-b0c8-c8d7c80feaae");
     final characteristicUuid = Guid("870e104f-ba63-4de3-a3ac-106969eac292");
-    List<String> sensordata = [];
+    List<String> sensorData = [];
     List<String> elements = []; //
-    List<List<String>> listofelements = [];
+    List<List<String>> listOfElements = [];
     List<BluetoothService> services = await bluetoothDevice.discoverServices();
     BluetoothCharacteristic? selectedCharacteristic;
 
-    String asciiValues(List<int> value){
-      String hexString = value.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ');
-      List<int> asciiList = hexString.split(' ').map((e) => int.parse(e, radix: 16)).toList();
+    String asciiValues(List<int> value) {
+      String hexString =
+          value.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ');
+      List<int> asciiList =
+          hexString.split(' ').map((e) => int.parse(e, radix: 16)).toList();
       return asciiList.map((e) => String.fromCharCode(e)).join('');
     }
 
     if (bluetoothDevice.isConnected) {
-
       for (BluetoothService service in services) {
         if (service.uuid == serviceUuid) {
-          for (BluetoothCharacteristic characteristic in service.characteristics) {
+          for (BluetoothCharacteristic characteristic
+              in service.characteristics) {
             if (characteristic.uuid == characteristicUuid) {
               selectedCharacteristic = characteristic;
             }
@@ -95,26 +104,34 @@ class _SyncCardState extends State<SyncCard> {
         }
       }
 
-      if(selectedCharacteristic != null){
+      if (selectedCharacteristic != null) {
         String asciiString = asciiValues(await selectedCharacteristic.read());
         print(asciiString);
-        if(asciiString == "ok"){
-          while(asciiString != "end"){
+        if (asciiString == "ok") {
+          while (asciiString != "end") {
             asciiString = asciiValues(await selectedCharacteristic.read());
             if (asciiString != "end") {
               elements = asciiString.split(",");
-              listofelements.add(elements);
-              sensordata.add(asciiString);
+              listOfElements.add(elements);
+              sensorData.add(asciiString);
             }
           }
           print("data to be saved");
-          for (List<String> element in listofelements) {
-            print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
-            List<Map<String, dynamic>> nodeToBeInserted = await databaseHelper.getNodeById(element[0]);
+          for (List<String> element in listOfElements) {
+            print(
+                "Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
+            List<Map<String, dynamic>> nodeToBeInserted =
+                await databaseHelper.getNodeById(element[0]);
             if (nodeToBeInserted.isEmpty) {
-              Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null);
+              Node newNode = Node(
+                  id: -1,
+                  nid: element[0],
+                  name: 'new node',
+                  description: null);
               int newNodeId = await databaseHelper.insertNode(newNode);
-              nodeToBeInserted = [{'id': newNodeId}];
+              nodeToBeInserted = [
+                {'id': newNodeId}
+              ];
               print("saving new node");
             }
             int nodeId = nodeToBeInserted[0]['id'] as int;
@@ -124,24 +141,33 @@ class _SyncCardState extends State<SyncCard> {
             double lux = double.tryParse(element[4]) ?? 0.0;
             double soil = double.tryParse(element[5]) ?? 0.0;
 
-            await databaseHelper.insertData(nodeId, 1, temp, DateTime.now().millisecondsSinceEpoch); //ToDo: change this insert the timestamp received from the receiver module
-            await databaseHelper.insertData(nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
-            await databaseHelper.insertData(nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
-            await databaseHelper.insertData(nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);
-            await databaseHelper.updateLastSync(receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(
+                nodeId,
+                1,
+                temp,
+                DateTime.now()
+                    .millisecondsSinceEpoch); //ToDo: change this insert the timestamp received from the receiver module
+            await databaseHelper.insertData(
+                nodeId, 2, hum, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(
+                nodeId, 3, lux, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.insertData(
+                nodeId, 4, soil, DateTime.now().millisecondsSinceEpoch);
+            await databaseHelper.updateLastSync(
+                receiverDevice.id ?? 1, DateTime.now().millisecondsSinceEpoch);
             setState(() {
               lastSync = DateTime.now().millisecondsSinceEpoch;
             });
             print("data inserted");
           }
-
-        }else{
-          print("cannot read data file"); //ToDo: add a toast here to inform user
+        } else {
+          print(
+              "cannot read data file"); //ToDo: add a toast here to inform user
         }
-      }else{
+      } else {
         print("error"); //ToDo: add a toast here to inform user
       }
-    }else{
+    } else {
       setState(() {
         isConnected = false;
       });
@@ -205,7 +231,7 @@ class _SyncCardState extends State<SyncCard> {
                         ),
                         Text(
                           'last sync: ${DateFormat('HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(lastSync))}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.normal,
                             color: Colors.black,
@@ -222,12 +248,14 @@ class _SyncCardState extends State<SyncCard> {
                       syncData(bluetoothDevice);
                     } else {
                       // if not connected
-                        scanForDevice(receiverDevice.mac);
+                      scanForDevice(receiverDevice.mac);
                     }
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF0AA061),
-                    side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                    side:
+                        const BorderSide(color: Color(0xFF0AA061), width: 1.0),
+                    // Outline color and thickness
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0), // Border radius
                     ),

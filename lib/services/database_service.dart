@@ -23,6 +23,7 @@ class DatabaseHelper {
   static const nodeId = 'nid';
   static const nodeName = 'name';
   static const nodeDescription = 'description';
+  static const nodeReceiverId = 'receiverid';
 
   static const tableDataTypes = 'datatypes';
   static const dataTypeId = 'id';
@@ -47,6 +48,7 @@ class DatabaseHelper {
   }
 
   DatabaseHelper._privateConstructor();
+
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static Database? _database;
 
@@ -79,7 +81,9 @@ class DatabaseHelper {
         $nodeTableId INTEGER PRIMARY KEY AUTOINCREMENT,
         $nodeId TEXT NOT NULL UNIQUE,
         $nodeName TEXT NOT NULL,
-        $nodeDescription TEXT
+        $nodeDescription TEXT,
+        $nodeReceiverId INTEGER,
+        FOREIGN KEY ($nodeTableId) REFERENCES $tableReceivers ($receiverTableId) ON DELETE CASCADE,
       )
     ''');
 
@@ -145,7 +149,7 @@ class DatabaseHelper {
     //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }
 
-  // Implement methods for CRUD operations here
+  // CRUD operations below have been separated into DAOs, ToDo: remove them later
 
   //CRUD for devices
   Future<int> insertReceiverDevice(

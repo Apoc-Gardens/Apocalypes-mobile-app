@@ -5,6 +5,8 @@ import '../models/datatype.dart';
 import '../models/node.dart';
 import '../models/test_table.dart';
 import '../services/database_service.dart';
+import 'package:mybluetoothapp/dao/data_dao.dart';
+import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 
 class dbpage extends StatefulWidget {
   const dbpage({super.key});
@@ -23,6 +25,8 @@ class _dbpageState extends State<dbpage> {
 
   List<List<String>> data = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
+  DataDao _dataDao = DataDaoImpl();
+
 
   Future<void> updateCount() async {
     count = (await databaseHelper.getMax())!;
@@ -50,6 +54,13 @@ class _dbpageState extends State<dbpage> {
     }
   }
 
+  Future<void> readData() async {
+    List<Data> dataTypes = await _dataDao.getData();
+    for (var dt in dataTypes) {
+      print('ID: ${dt.id}, nodeID: ${dt.nodeId}, dataTypeID: ${dt.dataTypeId}, dataValue: ${dt.value}, timestamp: ${dt.timestamp},');
+    }
+  }
+
   Future<void> readDevices() async {
     List<Receiver> devices = await databaseHelper.getAllDevices();
     for (var device in devices) {
@@ -66,13 +77,6 @@ class _dbpageState extends State<dbpage> {
     print(sensors);
   }
 
-  Future<void> readData() async {
-    List<Data> data = await databaseHelper.getAllData();
-    for (var dt in data) {
-      print('ID: ${dt.id}, data type: ${dt.dataTypeId}, node id: ${dt.nodeId}, value: ${dt.value}, time: ${dt.timestamp},');
-    }
-  }
-
   Future<void> readSpecificNodes() async {
    List<Map<String,dynamic>> nodeid =  await databaseHelper.getNodeById("N001");
    print(nodeid[0]["id"]);
@@ -80,7 +84,7 @@ class _dbpageState extends State<dbpage> {
 
   Future<void> readMapNode() async{
     // Insert a sample node (if not already inserted)
-    Node node = Node(id: null, nid: 'N001', name: 'Node 1', description: 'Description for Node 1');
+    Node node = Node(id: -1, nid: 'N001', name: 'Node 1', description: 'Description for Node 1');
     print("inserted:");
     print(await databaseHelper.insertNode(node));
 

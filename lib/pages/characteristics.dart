@@ -6,7 +6,7 @@ import 'characteristic_value_list.dart';
 class CharacteristicViewer extends StatefulWidget {
   final BluetoothDevice connectedDevice;
 
-  const CharacteristicViewer({super.key, required this.connectedDevice});
+  const CharacteristicViewer({required this.connectedDevice});
 
   @override
   _CharacteristicViewerState createState() => _CharacteristicViewerState();

@@ -4,30 +4,28 @@ import 'package:provider/provider.dart';
 import 'package:mybluetoothapp/pages/landing_page.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
 import 'package:mybluetoothapp/pages/sensors.dart';
-import 'package:mybluetoothapp/providers/bluetooth_provider.dart';
+import 'package:mybluetoothapp/providers/receivers_provider.dart';
 import 'package:mybluetoothapp/test/dbpage.dart';
 import 'package:mybluetoothapp/pages/characteristics.dart';
-import '../services/database_service.dart';
+import 'dao/receiver_dao.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+  final ReceiverDao _receiverDao = ReceiverDao();
 
   @override
   void initState() {
     super.initState();
-    databaseHelper.database;
   }
 
   Future<int> getReceiverCount() async {
-    return await databaseHelper.getReceiverCount() ?? 0;
+    return await _receiverDao.getReceiverCount() ?? 0;
   }
 
   @override
@@ -47,14 +45,14 @@ class _MyAppState extends State<MyApp> {
           final receiverCount = snapshot.data ?? 0;
           return MultiProvider(
             providers: [
-              ChangeNotifierProvider(create: (_) => BluetoothProvider()),
+              ChangeNotifierProvider(create: (_) => ReceiversProvider()),
             ],
             child: MaterialApp(
               initialRoute: receiverCount == 0 ? '/' : '/sensors',
               routes: {
                 '/': (context) => const Welcome(),
                 '/scan': (context) => ScanDevices(),
-                '/sensors': (context) =>const Sensors(),
+                '/sensors': (context) => const Sensors(),
                 '/characteristics': (context) => CharacteristicViewer(
                     connectedDevice: ModalRoute.of(context)!.settings.arguments
                         as BluetoothDevice),

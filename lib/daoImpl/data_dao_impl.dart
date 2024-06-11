@@ -212,4 +212,30 @@ class DataDaoImpl extends DataDao {
       );
     }
   }
+
+  @override
+  Future<List<Data>> getLatestReadings(String nodeId) async {
+    Database db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM data WHERE node_id = ? ORDER BY timestamp DESC LIMIT 5', [nodeId]);
+    return List.generate(maps.length, (i) {
+      return Data.fromMap(maps[i]);
+    });
+  }
+
+  @override
+  Future<int?> countData(String dataNid) async {
+    Database db = await _databaseHelper.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM data WHERE node_id = ?', [dataNid]));
+  }
+
+  @override
+  Future<int?> latestDataTimeStamp(String dataNid) async {
+    Database db = await _databaseHelper.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(timestamp) FROM data WHERE node_id = ?', [dataNid]));
+  }
+@override
+  Future<int?> oldestDataTimeStamp(String dataNid) async {
+    Database db = await _databaseHelper.database;
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MIN(timestamp) FROM data WHERE node_id = ?', [dataNid]));
+  }
 }

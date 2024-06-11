@@ -71,7 +71,7 @@ class _ViewSensorState extends State<ViewSensor> {
     data = await databaseHelper.getDataByNodeTime(tableId, startTime, endTime);
   }
 
-  Future<void> updateName(newName) async {
+  updateName(newName) async {
     int response =
         await databaseHelper.updateNodeName(widget.node.id.toString(), newName);
     if (response > 0) {
@@ -83,7 +83,7 @@ class _ViewSensorState extends State<ViewSensor> {
     }
   }
 
-  Future<void> updateDescription(newDescription) async {
+  updateDescription(newDescription) async {
     int response = await databaseHelper.updateNodeDescription(
         widget.node.id.toString(), newDescription);
     if (response > 0) {
@@ -156,8 +156,8 @@ class _ViewSensorState extends State<ViewSensor> {
       appBar: AppBar(
         title: GestureDetector(
           onTap: () async {
-            await showEditDialog('Name', widget.node.name, (newValue) {
-               updateName(newValue);
+            await showEditDialog('Name', widget.node.name, (newValue) async {
+               await updateName(newValue);
             });
           },
           child: Text(
@@ -207,8 +207,8 @@ class _ViewSensorState extends State<ViewSensor> {
               children: [
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () {
-                    showEditDialog('Description', widget.node.description ?? '',
+                  onTap: () async {
+                    await showEditDialog('Description', widget.node.description ?? '',
                             (newValue) async{
                           await updateDescription(newValue);
                         });
@@ -317,7 +317,7 @@ class _ViewSensorState extends State<ViewSensor> {
           final DateTimeRange? newDateRange = await showDateRangePicker(
             context: context,
             initialDateRange: DateTimeRange(
-              start: DateTime(2024, 06, 09).subtract(const Duration(days: 27)),
+              start: DateTime.now().subtract(const Duration(days: 27)),
               end: DateTime.now(),
             ),
             firstDate: DateTime(2022, 06, 09),

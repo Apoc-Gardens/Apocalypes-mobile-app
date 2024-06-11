@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:mybluetoothapp/dao/data_dao.dart';
 import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 import 'package:mybluetoothapp/models/datatype.dart';
@@ -90,8 +91,8 @@ class GraphBuilder {
     if (_isCustomInterval == false) {
       throw Exception('Cannot set end time for non-custom interval');
     }
-
-    _graphData.endTime = endTime;
+    // Adjusting to show the end of the selected date
+    _graphData.endTime = endTime.add(const Duration(days: 1));
     return this;
   }
 
@@ -107,7 +108,7 @@ class GraphBuilder {
     }
 
     if (_graphData.interval == null) {
-      throw Exception('Interval must be set');
+      throw Exception('Graph Interval must be set');
     }
 
     if (_graphData.node == null) {
@@ -134,21 +135,10 @@ class GraphBuilder {
     int endTime = _graphData.endTime?.millisecondsSinceEpoch ??
         DateTime.now().millisecondsSinceEpoch;
 
-    final datapoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
+    final dataPoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
         nodeId, dataTypeId, startTime, endTime);
 
-    if (datapoints.isEmpty) {
-      _graphData
-        ..maxY = 0
-        ..minY = 0
-        ..avgY = 0
-        ..maxX = 0
-        ..minX = 0
-        ..avgX = 0;
-      return [];
-    }
-
-    List<Data> newDatapoints = [];
+    List<Data> newDataPoints = [];
     int timeStamp;
     int timeIncrements;
     int maxTimeValue;
@@ -176,6 +166,14 @@ class GraphBuilder {
         maxTimeValue = 31;
         break;
       case GraphInterval.Custom:
+        if (_graphData.startTime == null) {
+          throw Exception("Start time cannot be null for custom interval");
+        }
+
+        if (_graphData.endTime == null) {
+          throw Exception("End time cannot be null for custom interval");
+        }
+
         timeStamp = _graphData.startTime?.millisecondsSinceEpoch ?? 0;
         timeIncrements = const Duration(days: 1).inMilliseconds;
         maxTimeValue =
@@ -185,7 +183,7 @@ class GraphBuilder {
     }
 
     for (int i = 0; i < maxTimeValue; i++) {
-      Data? data = datapoints.firstWhere(
+      Data? data = dataPoints.firstWhere(
           (element) =>
               element.timestamp >= timeStamp &&
               element.timestamp < timeStamp + timeIncrements,
@@ -194,12 +192,12 @@ class GraphBuilder {
               dataTypeId: _graphData.dataType!.id,
               value: 0,
               timestamp: timeStamp));
-      newDatapoints.add(data);
+      newDataPoints.add(data);
       timeStamp += timeIncrements;
     }
 
-    datapoints.clear();
-    datapoints.addAll(newDatapoints);
+    dataPoints.clear();
+    dataPoints.addAll(newDataPoints);
 
     // Initialize variables to hold the values
     double maxY = double.negativeInfinity;
@@ -209,7 +207,7 @@ class GraphBuilder {
     int minX = 0;
 
 // Calculate maxY, minY, sumY, maxX, and minX in one loop
-    for (Data data in datapoints) {
+    for (Data data in dataPoints) {
       double value = data.value;
       int timestamp = data.timestamp;
 
@@ -234,7 +232,7 @@ class GraphBuilder {
     }
 
 // Calculate avgY and avgX
-    double avgY = sumY / datapoints.length;
+    double avgY = sumY / dataPoints.length;
     double avgX = (maxX + minX) / 2;
 
 // Set the values in _graphData
@@ -246,9 +244,10 @@ class GraphBuilder {
       ..minX = minX.toDouble()
       ..avgX = avgX;
 
-    return datapoints;
+    return dataPoints;
   }
 
+  @Deprecated("Do not use this method in production")
   void _populateData() {
     DataDao dataDao = DataDaoImpl();
     dataDao.deleteAllData();

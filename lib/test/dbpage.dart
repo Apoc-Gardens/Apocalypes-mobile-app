@@ -6,7 +6,6 @@ import '../models/node.dart';
 import '../models/test_table.dart';
 import '../services/database_service.dart';
 import 'package:mybluetoothapp/dao/data_dao.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 
 class dbpage extends StatefulWidget {
   const dbpage({super.key});
@@ -25,7 +24,7 @@ class _dbpageState extends State<dbpage> {
 
   List<List<String>> data = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
-  DataDao _dataDao = DataDaoImpl();
+  DataDao _dataDao = DataDao();
 
 
   Future<void> updateCount() async {
@@ -55,7 +54,7 @@ class _dbpageState extends State<dbpage> {
   }
 
   Future<void> readData() async {
-    List<Data> dataTypes = await _dataDao.getData();
+    List<Data> dataTypes = await _dataDao.getAllData();
     for (var dt in dataTypes) {
       print('ID: ${dt.id}, nodeID: ${dt.nodeId}, dataTypeID: ${dt.dataTypeId}, dataValue: ${dt.value}, timestamp: ${dt.timestamp},');
     }
@@ -84,7 +83,7 @@ class _dbpageState extends State<dbpage> {
 
   Future<void> readMapNode() async{
     // Insert a sample node (if not already inserted)
-    Node node = Node(id: -1, nid: 'N001', name: 'Node 1', description: 'Description for Node 1');
+    Node node = Node(id: null, nid: 'N001', name: 'Node 1', description: 'Description for Node 1', receiverid: null);
     print("inserted:");
     print(await databaseHelper.insertNode(node));
 

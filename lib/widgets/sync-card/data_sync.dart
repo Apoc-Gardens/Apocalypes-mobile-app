@@ -4,7 +4,6 @@ import 'package:mybluetoothapp/dao/node_dao.dart';
 import 'package:mybluetoothapp/dao/receiver_dao.dart';
 import 'package:mybluetoothapp/models/node.dart';
 import 'package:mybluetoothapp/models/receiver.dart';
-import 'package:mybluetoothapp/models/data.dart';
 
 class DataSync {
   static Future<void> syncData(
@@ -60,8 +59,7 @@ class DataSync {
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
             List<Map<String, dynamic>> nodeToBeInserted = await nodeDao.getNodeById(element[0]);
             if (nodeToBeInserted.isEmpty) {
-              // Initialization of node without id
-              Node newNode = Node(id: -1, nid: element[0], name: 'new node', description: null);
+              Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null, receiverid: receiverDevice.id);
               int newNodeId = await nodeDao.insertNode(newNode);
               nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");
@@ -74,10 +72,10 @@ class DataSync {
             double soil = double.tryParse(element[5]) ?? 0.0;
             int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
 
-            await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 1, value: temp, timestamp: timestamp, ));
-            await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 2, value: hum, timestamp: timestamp, ));
-            await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 3, value: lux, timestamp: timestamp, ));
-            await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 4, value: soil, timestamp: timestamp, ));
+            await dataDao.insertData(nodeId, 1, temp, timestamp);
+            await dataDao.insertData(nodeId, 2, hum, timestamp);
+            await dataDao.insertData(nodeId, 3, lux, timestamp);
+            await dataDao.insertData(nodeId, 4, soil, timestamp);
           }
           await receiverDao.updateLastSync(receiverDevice.id!, DateTime.now().millisecondsSinceEpoch);
         } else {

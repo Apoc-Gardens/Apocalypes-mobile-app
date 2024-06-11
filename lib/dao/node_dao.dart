@@ -7,19 +7,7 @@ class NodeDao {
 
   Future<int> insertNode(Node node) async {
     Database db = await _databaseHelper.database;
-    int? newNodeId;
-    if(node.id < 0){
-      newNodeId = null;
-    }else{
-      newNodeId = node.id;
-    }
-
-    return await db.insert('nodes', {
-      'id': newNodeId,
-      'nid': node.nid,
-      'name': node.name,
-      'description': node.description,
-    }, conflictAlgorithm: ConflictAlgorithm.ignore);
+    return await db.insert('nodes', node.toMap(), conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<int?> getNodeCount() async {

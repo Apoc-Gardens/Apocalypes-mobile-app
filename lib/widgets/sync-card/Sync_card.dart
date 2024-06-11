@@ -5,7 +5,6 @@ import 'package:mybluetoothapp/dao/data_dao.dart';
 import 'package:mybluetoothapp/dao/node_dao.dart';
 import 'package:mybluetoothapp/dao/receiver_dao.dart';
 import 'package:mybluetoothapp/models/receiver.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 
 import 'data_sync.dart';
 
@@ -19,7 +18,7 @@ class SyncCard extends StatefulWidget {
 class _SyncCardState extends State<SyncCard> {
   final ReceiverDao _receiverDao = ReceiverDao();
   final NodeDao _nodeDao = NodeDao();
-  final DataDao _dataDao = DataDaoImpl();
+  final DataDao _dataDao = DataDao();
   late Receiver receiverDevice;
   late BluetoothDevice bluetoothDevice;
   int lastSync = 0;
@@ -36,26 +35,24 @@ class _SyncCardState extends State<SyncCard> {
     List<Receiver> devices = await _receiverDao.getAllDevices();
     receiverDevice = devices[0];
     lastSync = receiverDevice.lastSynced ?? 0;
-    print(
-        'ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
+    print('ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');
     connectToDevice(receiverDevice.mac);
   }
 
   Future<void> connectToDevice(String mac) async {
     bluetoothDevice = BluetoothDevice.fromId(mac);
     await bluetoothDevice.connect(timeout: const Duration(seconds: 15));
-    if (bluetoothDevice.isConnected) {
+    if(bluetoothDevice.isConnected){
       setState(() {
         isConnected = true;
       });
-    } else {
+    }else{
       isConnected = false;
     }
   }
 
   Future<void> syncData(BluetoothDevice bluetoothDevice) async {
-    await DataSync.syncData(
-        bluetoothDevice, _dataDao, _nodeDao, receiverDevice, _receiverDao, () {
+    await DataSync.syncData(bluetoothDevice, _dataDao, _nodeDao, receiverDevice, _receiverDao, () {
       setState(() {
         lastSync = DateTime.now().millisecondsSinceEpoch;
         syncInProgress = true;
@@ -147,9 +144,7 @@ class _SyncCardState extends State<SyncCard> {
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF0AA061),
-                    side:
-                        const BorderSide(color: Color(0xFF0AA061), width: 1.0),
-                    // Outline color and thickness
+                    side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0), // Border radius
                     ),
@@ -172,3 +167,4 @@ class _SyncCardState extends State<SyncCard> {
     //bluetoothDevice.disconnect();
   }
 }
+

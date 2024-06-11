@@ -4,12 +4,14 @@ class Node {
   late final String nid;
   final String name;
   final String? description;
+  final int? receiverid;
 
   Node({
     required this.id,
     required this.nid,
     required this.name,
     required this.description,
+    required this.receiverid
   });
 
   // Convert a Node into a Map. The keys must correspond to the column names in the database.
@@ -19,6 +21,7 @@ class Node {
       'nid': nid,
       'name': name,
       'description': description,
+      'receiverid': receiverid
     };
   }
 
@@ -29,6 +32,7 @@ class Node {
       nid: map['nid'],
       name: map['name'],
       description: map['description'],
+      receiverid: map['receiverid']
     );
   }
 }

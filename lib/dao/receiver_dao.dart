@@ -15,6 +15,11 @@ class ReceiverDao {
     return await db.rawUpdate('UPDATE receivers SET lastsynced = ? WHERE id = ?', [timestamp, id]);
   }
 
+  Future<int> updateReceiverName(int id, String name) async {
+    Database db = await _databaseHelper.database;
+    return await db.rawUpdate('UPDATE receivers SET name = ? WHERE id = ?', [name, id]);
+  }
+
   Future<int?> getReceiverCount() async {
     Database db = await _databaseHelper.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(id) FROM receivers'));

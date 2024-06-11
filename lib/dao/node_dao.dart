@@ -40,6 +40,14 @@ class NodeDao {
     });
   }
 
+  Future<List<Node>> getNodesByReceiver(int receiverId) async {
+    Database db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT id FROM nodes WHERE receiverid = ?', [receiverId]);
+    return List.generate(maps.length, (i) {
+      return Node.fromMap(maps[i]);
+    });
+  }
+
   Future<int> updateNodeName(String tableId, String name) async {
     Database db = await _databaseHelper.database;
     return await db.rawUpdate('UPDATE nodes SET name = ? WHERE id = ?', [name, tableId]);

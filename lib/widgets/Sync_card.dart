@@ -127,6 +127,7 @@ class _SyncCardState extends State<SyncCard> {
                   id: -1,
                   nid: element[0],
                   name: 'new node',
+                  receiverid: null,
                   description: null);
               int newNodeId = await databaseHelper.insertNode(newNode);
               nodeToBeInserted = [

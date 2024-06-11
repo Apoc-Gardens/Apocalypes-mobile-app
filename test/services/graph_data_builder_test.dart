@@ -18,6 +18,7 @@ void main() {
       id: 1,
       nid: "12",
       name: "test node",
+      receiverid: null,
       description: "test node description");
   final testDataType =
   DataType(id: 1, name: "temperature", unit: "C");

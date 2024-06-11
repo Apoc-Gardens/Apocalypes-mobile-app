@@ -61,7 +61,7 @@ class DataSync {
             List<Map<String, dynamic>> nodeToBeInserted = await nodeDao.getNodeById(element[0]);
             if (nodeToBeInserted.isEmpty) {
               // Initialization of node without id
-              Node newNode = Node(id: -1, nid: element[0], name: 'new node', description: null);
+              Node newNode = Node(id: -1, nid: element[0], name: 'new node',receiverid: null, description: null);
               int newNodeId = await nodeDao.insertNode(newNode);
               nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");

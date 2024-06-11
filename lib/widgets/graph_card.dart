@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../models/graph_data.dart';
@@ -40,7 +39,11 @@ class GraphCard extends StatelessWidget {
     return SfCartesianChart(
         primaryXAxis: DateTimeAxis(),
         primaryYAxis: NumericAxis(),
-        zoomPanBehavior: ZoomPanBehavior(enablePinching: true),
+        zoomPanBehavior: ZoomPanBehavior(
+          enablePinching: true,
+          zoomMode: ZoomMode.x,
+          enablePanning: true,
+        ),
         tooltipBehavior: TooltipBehavior(
             enable: true,
             header: graphData.dataType?.name,

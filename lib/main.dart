@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:mybluetoothapp/pages/receivers.dart';
 import 'package:provider/provider.dart';
 import 'package:mybluetoothapp/pages/landing_page.dart';
 import 'package:mybluetoothapp/pages/scan_devices.dart';
@@ -48,6 +49,7 @@ class _MyAppState extends State<MyApp> {
                 '/': (context) => Welcome(),
                 '/scan': (context) => ScanDevices(),
                 '/sensors': (context) => Sensors(),
+                '/receivers': (context) => Receivers(),
                 '/characteristics': (context) => CharacteristicViewer(
                     connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
                 '/test': (context) => dbpage(),

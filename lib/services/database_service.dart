@@ -81,7 +81,7 @@ class DatabaseHelper {
         $nodeName TEXT NOT NULL,
         $nodeDescription TEXT,
         $nodeReceiverId INTEGER,
-        FOREIGN KEY ($nodeTableId) REFERENCES $tableReceivers ($receiverTableId) ON DELETE CASCADE,
+        FOREIGN KEY ($nodeReceiverId) REFERENCES $tableReceivers ($receiverTableId) ON DELETE CASCADE
       )
     ''');
 

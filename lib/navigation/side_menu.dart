@@ -30,6 +30,7 @@ class _SideMenuState extends State<SideMenu> {
             ListTile(
               leading: Icon(Icons.perm_device_info),
               title: Text('Devices'),
+                onTap: () => Navigator.pushNamed(context, '/receivers')
             ),
             ListTile(
               leading: Icon(Icons.device_thermostat),

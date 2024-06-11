@@ -119,7 +119,6 @@ class _ScanDevicesState extends State<ScanDevices> {
             subtitle: Text(device.device.remoteId.toString()),
             trailing: OutlinedButton(
               onPressed: () {
-                // Add your onPressed logic here
                 connectToDevice(device.device);
               },
               style: OutlinedButton.styleFrom(
@@ -130,7 +129,7 @@ class _ScanDevicesState extends State<ScanDevices> {
                 ),
                 padding: EdgeInsets.all(6.0), // Padding
               ),
-              child: Text('Connect and save'),
+              child: Text('Add'),
             ),
           );
         },

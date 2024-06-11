@@ -59,7 +59,7 @@ class DataSync {
             print("Id: ${element[0]}, battery: ${element[1]}, Temp: ${element[2]}, Hum: ${element[3]}, Lux : ${element[4]}");
             List<Map<String, dynamic>> nodeToBeInserted = await nodeDao.getNodeById(element[0]);
             if (nodeToBeInserted.isEmpty) {
-              Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null);
+              Node newNode = Node(id: null, nid: element[0], name: 'new node', description: null, receiverid: receiverDevice.id);
               int newNodeId = await nodeDao.insertNode(newNode);
               nodeToBeInserted = [{'id': newNodeId}];
               print("saving new node");

@@ -83,7 +83,7 @@ class _dbpageState extends State<dbpage> {
 
   Future<void> readMapNode() async{
     // Insert a sample node (if not already inserted)
-    Node node = Node(id: null, nid: 'N001', name: 'Node 1', description: 'Description for Node 1');
+    Node node = Node(id: null, nid: 'N001', name: 'Node 1', description: 'Description for Node 1', receiverid: null);
     print("inserted:");
     print(await databaseHelper.insertNode(node));
 

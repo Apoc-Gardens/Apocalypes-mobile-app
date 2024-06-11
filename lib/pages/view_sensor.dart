@@ -27,13 +27,14 @@ class ViewSensor extends StatefulWidget {
 class _ViewSensorState extends State<ViewSensor> {
   final NodeDao _nodeDao = NodeDao();
   final DataDao _dataDao = DataDaoImpl();
-  int selectedIndex = 1;
+  final GraphInterval _initialInterval = GraphInterval.LastTwentyFourHours;
+
+  int selectedIndex = 0;
   int noOfData = 0;
   int latestTime = 0;
   int oldestTime = 0;
   late List<Map<String, dynamic>> data;
   List<GraphData> graphDataList = [];
-  DateTime now = DateTime.now(); // Get the current time
   late String nodeName;
   late String nodeDescription;
   bool _isGraphLoading = true;
@@ -43,8 +44,9 @@ class _ViewSensorState extends State<ViewSensor> {
     super.initState();
     nodeName = widget.node.name;
     nodeDescription = widget.node.description ?? 'No description';
+    selectedIndex = _initialInterval.index;
+    _loadGraphData(_initialInterval);
     getData();
-    _loadGraphData(GraphInterval.LastTwentyFourHours);
   }
 
   Future<void> getData() async {
@@ -321,7 +323,6 @@ class _ViewSensorState extends State<ViewSensor> {
             lastDate: DateTime.now(),
             helpText: 'Select a date range',
           );
-
           await _loadCustomGraphData(newDateRange!.start, newDateRange.end);
         } else {
           await _loadGraphData(interval);

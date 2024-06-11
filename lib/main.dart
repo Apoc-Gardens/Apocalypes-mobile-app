@@ -20,6 +20,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final ReceiverDao _receiverDao = ReceiverDao();
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Future<int> getReceiverCount() async {
     return await _receiverDao.getReceiverCount() ?? 0;
   }
@@ -46,13 +51,14 @@ class _MyAppState extends State<MyApp> {
             child: MaterialApp(
               initialRoute: receiverCount == 0 ? '/' : '/sensors',
               routes: {
-                '/': (context) => Welcome(),
+                '/': (context) => const Welcome(),
                 '/scan': (context) => ScanDevices(),
-                '/sensors': (context) => Sensors(),
+                '/sensors': (context) => const Sensors(),
                 '/receivers': (context) => Receivers(),
                 '/characteristics': (context) => CharacteristicViewer(
-                    connectedDevice: ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
-                '/test': (context) => dbpage(),
+                    connectedDevice: ModalRoute.of(context)!.settings.arguments
+                        as BluetoothDevice),
+                '/test': (context) => const dbpage(),
               },
             ),
           );

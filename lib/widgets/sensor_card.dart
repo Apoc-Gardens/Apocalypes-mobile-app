@@ -4,6 +4,7 @@ import 'package:mybluetoothapp/pages/view_sensor.dart';
 import 'package:intl/intl.dart';
 import '../dao/data_dao.dart';
 import '../models/data.dart';
+import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
 
 class SensorCard extends StatefulWidget {
   final Node node;
@@ -14,7 +15,7 @@ class SensorCard extends StatefulWidget {
 }
 
 class _SensorCardState extends State<SensorCard> {
-  final DataDao _dataDao = DataDao();
+  final DataDao _dataDao = DataDaoImpl();
   int noOfData = 0;
   int latestTime = 0;
   late String temperature = '0';
@@ -96,42 +97,42 @@ class _SensorCardState extends State<SensorCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(widget.node.name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black
                 ),
               ),
               Text(widget.node.description ?? ' ',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.normal,
                     color: Colors.black
                 ),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               Row(
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Last Update'),
+                      const Text('Last Update'),
                       Text(DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(latestTime)))
                     ],
                   ),
-                  SizedBox(width: 20,),
+                  const SizedBox(width: 20,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('No. Data'),
+                      const Text('No. Data'),
                       Text(noOfData.toString())
                     ],
                   )
                 ],
               ),
-              SizedBox(height: 10,),
-              Divider(),
-              Text('LATEST READINGS',
+              const SizedBox(height: 10,),
+              const Divider(),
+              const Text('LATEST READINGS',
               style: TextStyle(
                 color: Color(0xFF0AA061),
                 ),
@@ -142,31 +143,31 @@ class _SensorCardState extends State<SensorCard> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Temp'),
-                      Text(temperature+'C')
+                      const Text('Temp'),
+                      Text('${temperature}C')
                     ],
                   ),
-                  SizedBox(width: 20,),
+                  const SizedBox(width: 20,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Humid'),
-                      Text(humidity+'%')
+                      const Text('Humid'),
+                      Text('$humidity%')
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('LUX'),
-                      Text(lightIntensity+'lux')
+                      const Text('LUX'),
+                      Text('${lightIntensity}lux')
                     ],
                   ),
-                  SizedBox(width: 20,),
+                  const SizedBox(width: 20,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Soil'),
-                      Text(soilMoisture+'%')
+                      const Text('Soil'),
+                      Text('$soilMoisture%')
                     ],
                   )
                 ],

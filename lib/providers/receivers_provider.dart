@@ -7,14 +7,13 @@ class ReceiversProvider with ChangeNotifier {
   final ReceiverDao _receiverDao = ReceiverDao();
   final List<BluetoothDevice> _connectedDevices = [];
   bool _isScanning = false;
-  late BluetoothDevice selectedDevice;
+  late Receiver selectedDevice;
   late List<Receiver> savedDevices;
-
   List<BluetoothDevice> get connectedDevices => _connectedDevices;
   bool get isScanning => _isScanning;
 
   ReceiversProvider() {
-    _connectToSavedDevices();
+    _init();
   }
 
   Future<void> _connectToSavedDevices() async {
@@ -26,27 +25,18 @@ class ReceiversProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> startScan() async {
-    _isScanning = true;
-    notifyListeners();
-    FlutterBluePlus.startScan();
-    FlutterBluePlus.scanResults.listen((results) {
-      for (ScanResult result in results) {
-        if (!_connectedDevices.contains(result.device)) {
-          _connectedDevices.add(result.device);
-          // Optionally save the device to the database here
-        }
-      }
-      notifyListeners();
-    });
-    await Future.delayed(Duration(minutes: 1));
-    _stopScan();
+  Future<void> _init() async {
+    await _getSavedDevices();
+    selectFirstDevice();
   }
 
-  void _stopScan() {
-    FlutterBluePlus.stopScan();
-    _isScanning = false;
+  Future<void> selectFirstDevice()async {
+    selectedDevice = savedDevices.first;
     notifyListeners();
   }
 
+  Future<void> _getSavedDevices() async {
+    savedDevices = await _receiverDao.getAllDevices();
+    notifyListeners();
+  }
 }

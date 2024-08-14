@@ -32,4 +32,12 @@ class ReceiverDao {
       return Receiver.fromMap(maps[i]);
     });
   }
+
+  Future<List<Receiver>> getDeviceById(int receiverId) async {
+    Database db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT * FROM receivers WHERE id = ?',[receiverId]);
+    return List.generate(maps.length, (i) {
+      return Receiver.fromMap(maps[i]);
+    });
+  }
 }

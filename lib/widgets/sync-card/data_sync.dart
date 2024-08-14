@@ -17,7 +17,8 @@ class DataSync {
       Function onSyncEnd,
       ) async {
     final serviceUuid = Guid("8292fed4-e037-4dd7-b0c8-c8d7c80feaae");
-    final characteristicUuid = Guid("870e104f-ba63-4de3-a3ac-106969eac292");
+    final syncUuid = Guid("870e104f-ba63-4de3-a3ac-106969eac292");
+    final latestDate = Guid("d5641f9f-1d6f-4f8e-94db-49fbfe9192ab");
     List<String> sensorData = [];
     List<String> elements = [];
     List<List<String>> listOfElements = [];
@@ -34,7 +35,7 @@ class DataSync {
       for (BluetoothService service in services) {
         if (service.uuid == serviceUuid) {
           for (BluetoothCharacteristic characteristic in service.characteristics) {
-            if (characteristic.uuid == characteristicUuid) {
+            if (characteristic.uuid == syncUuid) {
               selectedCharacteristic = characteristic;
             }
           }

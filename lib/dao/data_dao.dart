@@ -200,5 +200,8 @@ abstract class DataDao {
   /// Returns: A `Future<int?>` representing the timestamp (in milliseconds since epoch) of the oldest data object for the specified data node ID.
   /// If no data exists for the data node ID, null will be returned.
   Future<int?> oldestDataTimeStamp(String dataNid);
+
+  ///This weill return the oldest time stamp of the data in the table
+  Future<int?> latestDataTimeStampOverall();
 }
 

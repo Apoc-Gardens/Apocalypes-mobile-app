@@ -36,7 +36,8 @@ class _ScanDevicesState extends State<ScanDevices> {
       }
     });
 
-    FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
+    //FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
+    FlutterBluePlus.startScan();
 
     // Automatically stop scanning after 1 minute
     scanTimer = Timer(Duration(seconds: 30), stopScan);

@@ -51,8 +51,8 @@ class DataSync {
     int? latestAppTimestamp = await dataDao.latestDataTimeStampOverall();
     DateTime latestAppDate = latestAppTimestamp != null
         ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp, isUtc: true)
-        : DateTime.now().subtract(const Duration(days: 4)); // Use epoch if no data in app
-
+        : DateTime.now().subtract(const Duration(days: 8)); // Use epoch if no data in app
+    print("Latest date from DB:$latestAppDate");
     onSyncStart();
 
     // Sync data day by day
@@ -99,23 +99,34 @@ class DataSync {
   }
 
   static Future<void> processAndSaveData(List<String> element, NodeDao nodeDao, DataDao dataDao) async {
-    List<Map<String, dynamic>> nodeToBeInserted = await nodeDao.getNodeById(element[0]);
-    if (nodeToBeInserted.isEmpty) {
-      Node newNode = Node(id: -1, nid: element[0], name: 'new node', receiverid: null, description: null);
-      int newNodeId = await nodeDao.insertNode(newNode);
-      nodeToBeInserted = [{'id': newNodeId}];
+    // Validate if element[0] is a positive integer
+    int? nodeNid = int.tryParse(element[0]);
+    if (nodeNid == null || nodeNid <= 0) {
+      print('Invalid node ID: ${element[0]}. Must be a positive integer.');
+    }else{
+      List<Map<String, dynamic>> nodeToBeInserted = await nodeDao.getNodeById(
+          element[0]);
+      if (nodeToBeInserted.isEmpty) {
+        Node newNode = Node(id: -1,
+            nid: element[0],
+            name: 'new node',
+            receiverid: null,
+            description: null);
+        int newNodeId = await nodeDao.insertNode(newNode);
+        nodeToBeInserted = [{'id': newNodeId}];
+      }
+      int nodeId = nodeToBeInserted[0]['id'] as int;
+
+      double temp = double.tryParse(element[2]) ?? 0.0;
+      double hum = double.tryParse(element[3]) ?? 0.0;
+      double lux = double.tryParse(element[4]) ?? 0.0;
+      double soil = double.tryParse(element[5]) ?? 0.0;
+      int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
+
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 1, value: temp, timestamp: timestamp));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 2, value: hum, timestamp: timestamp));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 3, value: lux, timestamp: timestamp));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 4, value: soil, timestamp: timestamp));
     }
-    int nodeId = nodeToBeInserted[0]['id'] as int;
-
-    double temp = double.tryParse(element[2]) ?? 0.0;
-    double hum = double.tryParse(element[3]) ?? 0.0;
-    double lux = double.tryParse(element[4]) ?? 0.0;
-    double soil = double.tryParse(element[5]) ?? 0.0;
-    int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
-
-    await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 1, value: temp, timestamp: timestamp));
-    await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 2, value: hum, timestamp: timestamp));
-    await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 3, value: lux, timestamp: timestamp));
-    await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 4, value: soil, timestamp: timestamp));
   }
 }

@@ -233,6 +233,7 @@ class DataDaoImpl extends DataDao {
     Database db = await _databaseHelper.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(timestamp) FROM data WHERE node_id = ?', [dataNid]));
   }
+
   @override
   Future<int?> oldestDataTimeStamp(String dataNid) async {
     Database db = await _databaseHelper.database;
@@ -242,6 +243,6 @@ class DataDaoImpl extends DataDao {
   @override
   Future<int?> latestDataTimeStampOverall() async {
     Database db = await _databaseHelper.database;
-    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(timestamp) FROM data WHERE node_id = ?'));
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT MAX(timestamp) FROM data'));
   }
 }

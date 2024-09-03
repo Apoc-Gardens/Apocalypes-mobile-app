@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:mybluetoothapp/pages/receivers.dart';
+import 'package:apoc_gardens/pages/receivers.dart';
 import 'package:provider/provider.dart';
-import 'package:mybluetoothapp/pages/landing_page.dart';
-import 'package:mybluetoothapp/pages/scan_devices.dart';
-import 'package:mybluetoothapp/pages/sensors.dart';
-import 'package:mybluetoothapp/providers/receivers_provider.dart';
-import 'package:mybluetoothapp/test/dbpage.dart';
-import 'package:mybluetoothapp/pages/characteristics.dart';
+import 'package:apoc_gardens/pages/landing_page.dart';
+import 'package:apoc_gardens/pages/scan_devices.dart';
+import 'package:apoc_gardens/pages/sensors.dart';
+import 'package:apoc_gardens/providers/receivers_provider.dart';
+import 'package:apoc_gardens/test/dbpage.dart';
+import 'package:apoc_gardens/pages/characteristics.dart';
 import 'dao/receiver_dao.dart';
 
 void main() => runApp(MyApp());

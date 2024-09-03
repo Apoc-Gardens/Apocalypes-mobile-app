@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/models/graph_data.dart';
+import 'package:apoc_gardens/models/graph_data.dart';
 
 @Deprecated('Use GraphCard instead')
 class GraphCardOld extends StatelessWidget {

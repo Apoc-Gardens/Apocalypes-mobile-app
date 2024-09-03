@@ -1,10 +1,10 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:mybluetoothapp/dao/data_dao.dart';
-import 'package:mybluetoothapp/dao/node_dao.dart';
-import 'package:mybluetoothapp/dao/receiver_dao.dart';
-import 'package:mybluetoothapp/models/node.dart';
-import 'package:mybluetoothapp/models/receiver.dart';
-import 'package:mybluetoothapp/models/data.dart';
+import 'package:apoc_gardens/dao/data_dao.dart';
+import 'package:apoc_gardens/dao/node_dao.dart';
+import 'package:apoc_gardens/dao/receiver_dao.dart';
+import 'package:apoc_gardens/models/node.dart';
+import 'package:apoc_gardens/models/receiver.dart';
+import 'package:apoc_gardens/models/data.dart';
 
 class DataSync {
   static Future<void> syncData(

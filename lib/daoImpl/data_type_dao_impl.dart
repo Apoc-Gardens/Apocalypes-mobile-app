@@ -1,6 +1,6 @@
-import 'package:mybluetoothapp/dao/data_type_dao.dart';
-import 'package:mybluetoothapp/models/datatype.dart';
-import 'package:mybluetoothapp/services/database_service.dart';
+import 'package:apoc_gardens/dao/data_type_dao.dart';
+import 'package:apoc_gardens/models/datatype.dart';
+import 'package:apoc_gardens/services/database_service.dart';
 
 class DataTypeDaoImpl extends DataTypeDao {
 

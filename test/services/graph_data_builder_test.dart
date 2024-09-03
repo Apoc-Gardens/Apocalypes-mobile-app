@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:mybluetoothapp/models/datatype.dart';
-import 'package:mybluetoothapp/models/graph_data.dart';
-import 'package:mybluetoothapp/models/graph_interval.dart';
-import 'package:mybluetoothapp/models/node.dart';
-import 'package:mybluetoothapp/services/graph_data_builder.dart';
+import 'package:apoc_gardens/models/datatype.dart';
+import 'package:apoc_gardens/models/graph_data.dart';
+import 'package:apoc_gardens/models/graph_interval.dart';
+import 'package:apoc_gardens/models/node.dart';
+import 'package:apoc_gardens/services/graph_data_builder.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:test/test.dart';
 

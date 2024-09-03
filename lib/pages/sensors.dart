@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/navigation/side_menu.dart';
-import 'package:mybluetoothapp/widgets/sync-card/sync_card.dart';
-import 'package:mybluetoothapp/widgets/sensor_card.dart';
-import 'package:mybluetoothapp/models/node.dart';
-import 'package:mybluetoothapp/models/receiver.dart';
+import 'package:apoc_gardens/navigation/side_menu.dart';
+import 'package:apoc_gardens/widgets/sync-card/sync_card.dart';
+import 'package:apoc_gardens/widgets/sensor_card.dart';
+import 'package:apoc_gardens/models/node.dart';
+import 'package:apoc_gardens/models/receiver.dart';
 
 import '../dao/node_dao.dart';
 import '../dao/receiver_dao.dart';

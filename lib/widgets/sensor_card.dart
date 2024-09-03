@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/models/node.dart';
-import 'package:mybluetoothapp/pages/view_sensor.dart';
+import 'package:apoc_gardens/models/node.dart';
+import 'package:apoc_gardens/pages/view_sensor.dart';
 import 'package:intl/intl.dart';
 import '../dao/data_dao.dart';
 import '../models/data.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
+import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
 
 class SensorCard extends StatefulWidget {
   final Node node;

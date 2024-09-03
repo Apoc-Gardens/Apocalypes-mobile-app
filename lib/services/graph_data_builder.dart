@@ -2,13 +2,13 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:mybluetoothapp/dao/data_dao.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
-import 'package:mybluetoothapp/models/datatype.dart';
-import 'package:mybluetoothapp/models/graph_data.dart';
-import 'package:mybluetoothapp/models/graph_interval.dart';
-import 'package:mybluetoothapp/models/data.dart';
-import 'package:mybluetoothapp/models/node.dart';
+import 'package:apoc_gardens/dao/data_dao.dart';
+import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
+import 'package:apoc_gardens/models/datatype.dart';
+import 'package:apoc_gardens/models/graph_data.dart';
+import 'package:apoc_gardens/models/graph_interval.dart';
+import 'package:apoc_gardens/models/data.dart';
+import 'package:apoc_gardens/models/node.dart';
 
 class GraphBuilder {
   final GraphData _graphData = GraphData();

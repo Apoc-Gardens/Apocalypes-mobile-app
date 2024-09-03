@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mybluetoothapp/models/datatype.dart';
-import 'package:mybluetoothapp/models/graph_interval.dart';
-import 'package:mybluetoothapp/models/node.dart';
+import 'package:apoc_gardens/models/datatype.dart';
+import 'package:apoc_gardens/models/graph_interval.dart';
+import 'package:apoc_gardens/models/node.dart';
 
 class GraphData {
   DataType? dataType;

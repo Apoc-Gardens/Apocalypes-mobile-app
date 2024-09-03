@@ -1,4 +1,4 @@
-import 'package:mybluetoothapp/models/node.dart';
+import 'package:apoc_gardens/models/node.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'package:path/path.dart';

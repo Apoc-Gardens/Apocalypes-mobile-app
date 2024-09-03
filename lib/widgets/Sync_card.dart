@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
 import '../models/receiver.dart';
 import '../services/database_service.dart';
-import 'package:mybluetoothapp/models/node.dart';
+import 'package:apoc_gardens/models/node.dart';
 
 class SyncCard extends StatefulWidget {
   const SyncCard({super.key});

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:intl/intl.dart';
-import 'package:mybluetoothapp/dao/data_dao.dart';
-import 'package:mybluetoothapp/dao/node_dao.dart';
-import 'package:mybluetoothapp/dao/receiver_dao.dart';
-import 'package:mybluetoothapp/models/receiver.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
+import 'package:apoc_gardens/dao/data_dao.dart';
+import 'package:apoc_gardens/dao/node_dao.dart';
+import 'package:apoc_gardens/dao/receiver_dao.dart';
+import 'package:apoc_gardens/models/receiver.dart';
+import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
 
 import 'data_sync.dart';
 

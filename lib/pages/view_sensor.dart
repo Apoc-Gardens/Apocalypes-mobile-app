@@ -2,15 +2,15 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mybluetoothapp/dao/data_type_dao.dart';
-import 'package:mybluetoothapp/daoImpl/data_type_dao_impl.dart';
-import 'package:mybluetoothapp/daoImpl/data_dao_impl.dart';
-import 'package:mybluetoothapp/models/datatype.dart';
-import 'package:mybluetoothapp/models/graph_data.dart';
-import 'package:mybluetoothapp/models/graph_interval.dart';
-import 'package:mybluetoothapp/models/node.dart';
-import 'package:mybluetoothapp/services/graph_data_builder.dart';
-import 'package:mybluetoothapp/widgets/graph_card.dart';
+import 'package:apoc_gardens/dao/data_type_dao.dart';
+import 'package:apoc_gardens/daoImpl/data_type_dao_impl.dart';
+import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
+import 'package:apoc_gardens/models/datatype.dart';
+import 'package:apoc_gardens/models/graph_data.dart';
+import 'package:apoc_gardens/models/graph_interval.dart';
+import 'package:apoc_gardens/models/node.dart';
+import 'package:apoc_gardens/services/graph_data_builder.dart';
+import 'package:apoc_gardens/widgets/graph_card.dart';
 
 import '../dao/data_dao.dart';
 import '../dao/node_dao.dart';

@@ -1,4 +1,4 @@
-import 'package:mybluetoothapp/services/database_service.dart';
+import 'package:apoc_gardens/services/database_service.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../dao/data_dao.dart';

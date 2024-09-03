@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:mybluetoothapp/navigation/side_menu.dart';
+import 'package:apoc_gardens/navigation/side_menu.dart';
 import '../dao/receiver_dao.dart';
 import 'dart:async';
 

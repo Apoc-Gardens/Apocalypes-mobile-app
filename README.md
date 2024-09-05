@@ -1,16 +1,11 @@
-# mybluetoothapp
+# Apocalypes mobile app
 
-A new Flutter project.
+The Apocalypse Sensor Kit is meant for gardening. It's a cheap, DIY suite of hardware and software that you can put together yourself, plant in the ground, and get readings for light intensity, soil moisture, humidity, and temperature. 
+Read the [full documentation](https://github.com/team-watchdog/apocalypse-sensor-kit).
 
-## Getting Started
+The Apocalypse Sensor Kit consists of three main components:
+1. Sensor Modules: Battery-powered devices that collect environmental data.
+2. Receiver Device: A central hub that receives and stores data from sensor modules.
+2. Mobile Application: For visualizing and analyzing the collected data.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This repository contains the flutter code for the Apocalypes Sensor Kit mobile app.

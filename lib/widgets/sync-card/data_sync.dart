@@ -51,7 +51,7 @@ class DataSync {
     int? latestAppTimestamp = await dataDao.latestDataTimeStampOverall();
     DateTime latestAppDate = latestAppTimestamp != null
         ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp, isUtc: true)
-        : DateTime.now().subtract(const Duration(days: 8)); // Use epoch if no data in app
+        : DateTime.now().subtract(const Duration(days: 20)); // Use 20 days before the latest date
     print("Latest date from DB:$latestAppDate");
     onSyncStart();
 

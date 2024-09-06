@@ -10,7 +10,8 @@ import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
 import 'data_sync.dart';
 
 class SyncCard extends StatefulWidget {
-  const SyncCard({super.key});
+  final Receiver receiver;
+  const SyncCard({super.key, required this.receiver});
 
   @override
   State<SyncCard> createState() => _SyncCardState();
@@ -33,8 +34,7 @@ class _SyncCardState extends State<SyncCard> {
   }
 
   Future<void> getDevices() async {
-    List<Receiver> devices = await _receiverDao.getAllDevices();
-    receiverDevice = devices[0];
+    receiverDevice = widget.receiver;
     lastSync = receiverDevice.lastSynced ?? 0;
     print(
         'ID: ${receiverDevice.id}, Name: ${receiverDevice.name}, MAC: ${receiverDevice.mac}, LastSync: ${receiverDevice.lastSynced}');

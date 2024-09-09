@@ -32,7 +32,7 @@ void main() {
               final startTime = DateTime(2024, 06, 8);
               final endTime = DateTime(2024, 06, 10);
 
-              final GraphData graphData = await GraphBuilder()
+              final GraphData graphData = await GraphDataBuilder()
                   .setNode(testNode)
                   .setGraphInterval(GraphInterval.Custom)
                   .setStartTime(startTime)
@@ -48,7 +48,7 @@ void main() {
           final endTime = DateTime(2024, 06, 10);
           final startTime = endTime.subtract(const Duration(days: 7));
 
-          final GraphData graphData = await GraphBuilder()
+          final GraphData graphData = await GraphDataBuilder()
               .setNode(testNode)
               .setGraphInterval(GraphInterval.Custom)
               .setStartTime(startTime)
@@ -73,7 +73,7 @@ void main() {
 
     test("graph object should consist of the correct endTime and startTime given the correct interval value", () async{
 
-      final GraphData graphData = await GraphBuilder()
+      final GraphData graphData = await GraphDataBuilder()
           .setNode(testNode)
           .setDataType(testDataType)
       .setGraphInterval(graphInterval)
@@ -85,7 +85,7 @@ void main() {
 
     test("graph object should consist of 7 dataspots given the correct interval value", () async{
 
-      final GraphData graphData = await GraphBuilder()
+      final GraphData graphData = await GraphDataBuilder()
           .setNode(testNode)
           .setDataType(testDataType)
           .setGraphInterval(graphInterval)

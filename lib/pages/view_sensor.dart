@@ -371,7 +371,7 @@ class _ViewSensorState extends State<ViewSensor> {
 
     // Build GraphData for each data type
     for (DataType dataType in dataTypes) {
-      GraphData graphData = await GraphBuilder()
+      GraphData graphData = await GraphDataBuilder()
           .setNode(widget.node)
           .setGraphInterval(interval)
           .setDataType(dataType)
@@ -398,7 +398,7 @@ class _ViewSensorState extends State<ViewSensor> {
 
     // Build GraphData for each data type
     for (DataType dataType in dataTypes) {
-      GraphData graphData = await GraphBuilder()
+      GraphData graphData = await GraphDataBuilder()
           .setNode(widget.node)
           .setGraphInterval(GraphInterval.Custom)
           .setStartTime(startDate)

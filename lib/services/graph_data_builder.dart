@@ -9,13 +9,16 @@ import 'package:apoc_gardens/models/graph_data.dart';
 import 'package:apoc_gardens/models/graph_interval.dart';
 import 'package:apoc_gardens/models/data.dart';
 import 'package:apoc_gardens/models/node.dart';
+import 'package:flutter/foundation.dart';
 
-class GraphBuilder {
+/// This class is used to format raw data to fit into graph context.
+/// - Essentially this class will create a GraphData object which can be used to feed into the GraphCard component.
+class GraphDataBuilder {
   final GraphData _graphData = GraphData();
-
   bool _isCustomInterval = false;
 
-  GraphBuilder setGraphInterval(GraphInterval interval) {
+  /// This method is used to set the time interval between the data points.
+  GraphDataBuilder setGraphInterval(GraphInterval interval) {
     switch (interval) {
       case GraphInterval.LastTwentyFourHours:
         _graphData
@@ -46,12 +49,12 @@ class GraphBuilder {
     return this;
   }
 
-  GraphBuilder setNode(Node node) {
+  GraphDataBuilder setNode(Node node) {
     _graphData.node = node;
     return this;
   }
 
-  GraphBuilder setDataType(DataType dataType) {
+  GraphDataBuilder setDataType(DataType dataType) {
     _graphData.dataType = dataType;
 
     if (dataType.id == 1) {
@@ -78,7 +81,7 @@ class GraphBuilder {
     return this;
   }
 
-  GraphBuilder setStartTime(DateTime startTime) {
+  GraphDataBuilder setStartTime(DateTime startTime) {
     if (_isCustomInterval == false) {
       throw Exception('Cannot set start time for non-custom interval');
     }
@@ -87,7 +90,7 @@ class GraphBuilder {
     return this;
   }
 
-  GraphBuilder setEndTime(DateTime endTime) {
+  GraphDataBuilder setEndTime(DateTime endTime) {
     if (_isCustomInterval == false) {
       throw Exception('Cannot set end time for non-custom interval');
     }
@@ -137,6 +140,9 @@ class GraphBuilder {
 
     final dataPoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
         nodeId, dataTypeId, startTime, endTime);
+
+    // Sorting the queried dataPoints
+    dataPoints.sort((a,b)=> a.timestamp.compareTo(b.timestamp));
 
     List<Data> newDataPoints = [];
     int timeStamp;

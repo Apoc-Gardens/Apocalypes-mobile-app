@@ -128,7 +128,7 @@ class _SensorsState extends State<Sensors> {
                       ),
                     ),
                   ),
-                  const SyncCard(),
+                  SyncCard(receiver: selectedReceiver!),
                 ],
               ),
             );

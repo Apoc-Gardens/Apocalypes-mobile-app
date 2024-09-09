@@ -45,13 +45,13 @@ class DataSync {
     // Get the latest date from the device
     int latestDeviceTimestamp = int.parse(asciiValues(await latestDateCharacteristic.read()));
     print("Latest date:$latestDeviceTimestamp");
-    DateTime latestDeviceDate = DateTime.fromMillisecondsSinceEpoch(latestDeviceTimestamp * 1000).toUtc();
+    DateTime latestDeviceDate = DateTime.fromMillisecondsSinceEpoch(latestDeviceTimestamp * 1000);
 
     // Get the latest date from the app's database
     int? latestAppTimestamp = await dataDao.latestDataTimeStampOverall();
     DateTime latestAppDate = latestAppTimestamp != null
-        ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp, isUtc: true)
-        : DateTime.now().subtract(const Duration(days: 20)); // Use 20 days before the latest date
+        ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp)
+        : DateTime.now().subtract(const Duration(days: 30)); // Use 30 days before the latest date
     print("Latest date from DB:$latestAppDate");
     onSyncStart();
 
@@ -82,6 +82,7 @@ class DataSync {
           await processAndSaveData(elements, nodeDao, dataDao);
         }
         asciiString = asciiValues(await syncCharacteristic.read());
+        print("ASCII STRING: "+asciiString);
       }
 
       // Move to the next day

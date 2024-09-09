@@ -5,6 +5,8 @@ import '../dao/receiver_dao.dart';
 import 'dart:async';
 
 class ScanDevices extends StatefulWidget {
+  const ScanDevices({super.key});
+
   @override
   _ScanDevicesState createState() => _ScanDevicesState();
 }
@@ -40,7 +42,7 @@ class _ScanDevicesState extends State<ScanDevices> {
     FlutterBluePlus.startScan();
 
     // Automatically stop scanning after 1 minute
-    scanTimer = Timer(Duration(seconds: 30), stopScan);
+    scanTimer = Timer(const Duration(seconds: 30), stopScan);
   }
 
   void stopScan() {
@@ -108,9 +110,9 @@ class _ScanDevicesState extends State<ScanDevices> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bluetooth Devices'),
+        title: const Text('Bluetooth Devices'),
       ),
-      drawer: SideMenu(),
+      drawer: const SideMenu(),
       body: ListView.builder(
         itemCount: devicesList.length,
         itemBuilder: (context, index) {
@@ -123,14 +125,14 @@ class _ScanDevicesState extends State<ScanDevices> {
                 connectToDevice(device.device);
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: Color(0xFF0AA061),
-                side: BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
+                foregroundColor: const Color(0xFF0AA061),
+                side: const BorderSide(color: Color(0xFF0AA061), width: 1.0), // Outline color and thickness
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4.0), // Border radius
                 ),
-                padding: EdgeInsets.all(6.0), // Padding
+                padding: const EdgeInsets.all(6.0), // Padding
               ),
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           );
         },

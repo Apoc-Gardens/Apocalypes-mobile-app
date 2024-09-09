@@ -29,6 +29,13 @@ class _MyAppState extends State<MyApp> {
     return await _receiverDao.getReceiverCount() ?? 0;
   }
 
+  ThemeData themeData = ThemeData(
+      useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.green,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int>(
@@ -49,6 +56,7 @@ class _MyAppState extends State<MyApp> {
               ChangeNotifierProvider(create: (_) => ReceiversProvider()),
             ],
             child: MaterialApp(
+              theme: themeData,
               initialRoute: receiverCount == 0 ? '/' : '/sensors',
               routes: {
                 '/': (context) => const Welcome(),

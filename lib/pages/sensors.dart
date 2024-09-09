@@ -46,7 +46,7 @@ class _SensorsState extends State<Sensors> {
       backgroundColor: Colors.white,
       drawer: SideMenu(),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Sensors',
           style: TextStyle(
             fontSize: 26,

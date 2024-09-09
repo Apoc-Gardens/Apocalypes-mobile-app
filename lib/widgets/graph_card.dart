@@ -50,6 +50,7 @@ class GraphCard extends StatelessWidget {
             format: 'point.x: point.y${graphData.dataType?.unit}'),
         series: <CartesianSeries>[
           SplineSeries<DataSpots, DateTime>(
+            color: const Color(0xFF0AA061),
               dataSource: graphData.dataSpots,
               xValueMapper: (DataSpots data, _) => data.x,
               yValueMapper: (DataSpots data, _) => data.y,

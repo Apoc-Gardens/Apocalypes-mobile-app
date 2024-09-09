@@ -12,7 +12,7 @@ class PopUps{
             borderRadius: BorderRadius.circular(10.0),
           ),
           title: Text('Edit $title',
-            style: TextStyle(color: Colors.green),
+            style: const TextStyle(color: Colors.green),
           ),
           content: TextField(
             cursorColor: Colors.green,

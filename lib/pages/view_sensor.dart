@@ -153,20 +153,30 @@ class _ViewSensorState extends State<ViewSensor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: GestureDetector(
-          onTap: () async {
-            await showEditDialog('Name', widget.node.name, (newValue) async {
-              updateName(newValue);
-            });
-          },
-          child: Text(
-            nodeName,
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'inter',
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                await showEditDialog('Name', widget.node.name, (newValue) async {
+                  updateName(newValue);
+                });
+              },
+              child: Text(
+                nodeName,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'inter',
+                ),
+              ),
             ),
-          ),
+            Text(widget.node.nid.toString(),
+              style: const TextStyle(
+                fontFamily: 'inter',
+              ),
+            )
+          ],
         ),
         bottom: _nodeHeader(context),
       ),

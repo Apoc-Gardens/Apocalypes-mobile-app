@@ -123,28 +123,28 @@ class DatabaseHelper {
       'name': 'Temperature',
       'unit': 'C',
       'description':
-          'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.'
+          'Essential factor in plant life, controlling growth speed, seed germination, and flowering timing, while also affecting soil microbe activity and water evaporation rates.'
     });
     await db.insert('datatypes', {
       'id': 2,
       'name': 'Humidity',
       'unit': '%',
       'description':
-          'Plays a crucial role in agriculture by influencing plant growth, transpiration, and the development of pests and diseases.',
+          'Key element in plant health, influencing water loss through leaves, pollen viability, and creating conditions that can promote or inhibit fungal growth.',
     });
     await db.insert('datatypes', {
       'id': 3,
       'name': 'Light intensity',
       'unit': 'Lux',
       'description':
-          'Critical factor in agriculture, affecting plant growth, development, and yield, as well as influencing soil properties, water availability, and the prevalence of pests and diseases.',
+          'Crucial driver of plant productivity, powering photosynthesis, shaping plant form, and triggering seasonal responses, while also influencing soil temperature and moisture evaporation.',
     });
     await db.insert('datatypes', {
       'id': 4,
       'name': 'Soil moisture',
       'unit': '%',
       'description':
-          'Soil moisture directly impacts plant growth by influencing nutrient uptake, root development, and photosynthesis efficiency, essential processes for plant health and vitality.',
+          'Fundamental component for plant survival, determining nutrient availability, root development, and overall plant stress levels, while also affecting soil structure and microbial activity.',
     });
     //await db.insert(tableReceivers, {'id': 1, 'name': 'ESP32', 'mac':'C8:F0:9F:F1:43:FE', 'lastsynced': null });
   }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../models/graph_data.dart';
 
 class GraphCard extends StatelessWidget {
   final GraphData graphData;
-
   const GraphCard({super.key, required this.graphData});
 
   @override
@@ -36,7 +36,24 @@ class GraphCard extends StatelessWidget {
   }
 
   SfCartesianChart graph() {
+    int? lastIndex;
     return SfCartesianChart(
+      onTrackballPositionChanging: (TrackballArgs args){
+        if (args.chartPointInfo.dataPointIndex != lastIndex) {
+          HapticFeedback.lightImpact();
+          lastIndex = args.chartPointInfo.dataPointIndex;
+        }
+      },
+      trackballBehavior: TrackballBehavior(
+        // Enables the trackball
+          enable: true,
+          tooltipAlignment: ChartAlignment.near,
+          tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+          tooltipSettings: InteractiveTooltip(
+              enable: true,
+              format: 'point.y${graphData.dataType?.unit}',
+          )
+      ),
         primaryXAxis: DateTimeAxis(),
         primaryYAxis: NumericAxis(),
         zoomPanBehavior: ZoomPanBehavior(
@@ -44,10 +61,10 @@ class GraphCard extends StatelessWidget {
           zoomMode: ZoomMode.x,
           enablePanning: true,
         ),
-        tooltipBehavior: TooltipBehavior(
-            enable: true,
-            header: graphData.dataType?.name,
-            format: 'point.x: point.y${graphData.dataType?.unit}'),
+        // tooltipBehavior: TooltipBehavior(
+        //     enable: true,
+        //     header: graphData.dataType?.name,
+        //     format: 'point.x: point.y${graphData.dataType?.unit}'),
         series: <CartesianSeries>[
           SplineSeries<DataSpots, DateTime>(
             color: const Color(0xFF0AA061),

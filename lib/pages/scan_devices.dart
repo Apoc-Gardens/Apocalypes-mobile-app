@@ -37,7 +37,7 @@ class _ScanDevicesState extends State<ScanDevices> {
         }
       }
     });
-
+    //nn
     //FlutterBluePlus.startScan(withServices: [Guid('8292fed4-e037-4dd7-b0c8-c8d7c80feaae')]);
     FlutterBluePlus.startScan();
 

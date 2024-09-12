@@ -55,37 +55,37 @@ class _SensorsState extends State<Sensors> {
           ),
         ),
         backgroundColor: Colors.white,
-        actions: [
-          FutureBuilder<List<Receiver>>(
-            future: receiversFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(), heightFactor: 1, widthFactor: 1);
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No receivers found'));
-              } else {
-                List<Receiver> receivers = snapshot.data!;
-                return DropdownButton<Receiver>(
-                  value: selectedReceiver,
-                  hint: const Text('Select Receiver'),
-                  onChanged: (Receiver? newValue) {
-                    setState(() {
-                      selectedReceiver = newValue;
-                    });
-                  },
-                  items: receivers.map<DropdownMenuItem<Receiver>>((Receiver receiver) {
-                    return DropdownMenuItem<Receiver>(
-                      value: receiver,
-                      child: Text(receiver.name),
-                    );
-                  }).toList(),
-                );
-              }
-            },
-          ),
-        ],
+        // actions: [
+        //   FutureBuilder<List<Receiver>>(
+        //     future: receiversFuture,
+        //     builder: (context, snapshot) {
+        //       if (snapshot.connectionState == ConnectionState.waiting) {
+        //         return const Center(child: CircularProgressIndicator(), heightFactor: 1, widthFactor: 1);
+        //       } else if (snapshot.hasError) {
+        //         return Center(child: Text('Error: ${snapshot.error}'));
+        //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        //         return const Center(child: Text('No receivers found'));
+        //       } else {
+        //         List<Receiver> receivers = snapshot.data!;
+        //         return DropdownButton<Receiver>(
+        //           value: selectedReceiver,
+        //           hint: const Text('Select Receiver'),
+        //           onChanged: (Receiver? newValue) {
+        //             setState(() {
+        //               selectedReceiver = newValue;
+        //             });
+        //           },
+        //           items: receivers.map<DropdownMenuItem<Receiver>>((Receiver receiver) {
+        //             return DropdownMenuItem<Receiver>(
+        //               value: receiver,
+        //               child: Text(receiver.name),
+        //             );
+        //           }).toList(),
+        //         );
+        //       }
+        //     },
+        //   ),
+        // ], this feature is hidden as it is a future improvement
       ),
       body: FutureBuilder<List<Receiver>>(
         future: receiversFuture,

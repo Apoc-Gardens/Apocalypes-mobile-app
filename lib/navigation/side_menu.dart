@@ -35,10 +35,10 @@ class _SideMenuState extends State<SideMenu> {
               leading: const Icon(Icons.device_thermostat),
               title: const Text('Sensors'),
               onTap: () => Navigator.pushNamed(context, '/sensors')),
-          ListTile(
-              leading: const Icon(Icons.data_object),
-              title: const Text('Test Page'),
-              onTap: () => Navigator.pushNamed(context, '/test')),
+          // ListTile(
+          //     leading: const Icon(Icons.data_object),
+          //     title: const Text('Test Page'),
+          //     onTap: () => Navigator.pushNamed(context, '/test')),
         ],
       ),
     );

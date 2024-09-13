@@ -1,7 +1,5 @@
 import 'dart:math';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:apoc_gardens/dao/data_dao.dart';
 import 'package:apoc_gardens/daoImpl/data_dao_impl.dart';
 import 'package:apoc_gardens/models/datatype.dart';
@@ -9,15 +7,46 @@ import 'package:apoc_gardens/models/graph_data.dart';
 import 'package:apoc_gardens/models/graph_interval.dart';
 import 'package:apoc_gardens/models/data.dart';
 import 'package:apoc_gardens/models/node.dart';
-import 'package:flutter/foundation.dart';
 
-/// This class is used to format raw data to fit into graph context.
-/// - Essentially this class will create a GraphData object which can be used to feed into the GraphCard component.
+/// A builder class for constructing and configuring GraphData objects.
+///
+/// This class provides a fluent interface for setting various properties of a GraphData object,
+/// including time intervals, nodes, data types, and custom time ranges. It also handles data
+/// retrieval and processing for graph visualization.
+///
+/// Usage:
+/// ```dart
+/// final graphData = await GraphDataBuilder()
+///   .setGraphInterval(GraphInterval.LastSevenDays)
+///   .setNode(someNode)
+///   .setDataType(someDataType)
+///   .build();
+/// ```
+///
+/// The builder supports the following graph intervals:
+/// - LastTwentyFourHours
+/// - LastSevenDays
+/// - LastThirtyDays
+/// - Custom (requires setting start and end times)
+///
+/// For custom intervals, use [setStartTime] and [setEndTime] methods.
+///
+/// The [build] method performs data retrieval, filtering, and statistical calculations
+/// before returning the final GraphData object.
+///
+/// Throws exceptions for invalid configurations, such as missing required data
+/// or attempting to set custom times for non-custom intervals.
 class GraphDataBuilder {
   final GraphData _graphData = GraphData();
   bool _isCustomInterval = false;
 
-  /// This method is used to set the time interval between the data points.
+  /// Sets the time interval for the graph data.
+  ///
+  /// This method configures the start and end times based on the selected [interval].
+  /// For custom intervals, it only sets a flag and doesn't set times directly.
+  ///
+  /// @param interval The desired graph interval.
+  /// @return This builder instance for method chaining.
   GraphDataBuilder setGraphInterval(GraphInterval interval) {
     switch (interval) {
       case GraphInterval.LastTwentyFourHours:
@@ -49,38 +78,31 @@ class GraphDataBuilder {
     return this;
   }
 
+  /// Sets the node for the graph data.
+  ///
+  /// @param node The node to be set.
+  /// @return This builder instance for method chaining.
   GraphDataBuilder setNode(Node node) {
     _graphData.node = node;
     return this;
   }
 
-  GraphDataBuilder setDataType(DataType dataType) {
-    _graphData.dataType = dataType;
 
-    if (dataType.id == 1) {
-      _graphData.gradientColors = [
-        const Color.fromARGB(255, 238, 119, 51),
-        const Color.fromARGB(255, 244, 85, 0),
-      ];
-    } else if (dataType.id == 2) {
-      _graphData.gradientColors = [
-        const Color.fromARGB(255, 0, 186, 164),
-        const Color.fromARGB(255, 0, 144, 127),
-      ];
-    } else if (dataType.id == 3) {
-      _graphData.gradientColors = [
-        const Color.fromARGB(255, 6, 122, 45),
-        const Color.fromARGB(255, 2, 68, 27),
-      ];
-    } else if (dataType.id == 4) {
-      _graphData.gradientColors = [
-        const Color.fromARGB(255, 51, 187, 238),
-        const Color.fromARGB(255, 41, 155, 196),
-      ];
-    }
+  /// Sets the data type for the graph data.
+  ///
+  /// @param dataType The data type to be set.
+  /// @return This builder instance for method chaining.
+  GraphDataBuilder setDataType(DataType dataType) {
+    //TODO: Do a valid datatype check here
+    _graphData.dataType = dataType;
     return this;
   }
 
+  /// Sets the start time for custom interval graph data.
+  ///
+  /// @param startTime The start time to be set.
+  /// @return This builder instance for method chaining.
+  /// @throws Exception if not using a custom interval.
   GraphDataBuilder setStartTime(DateTime startTime) {
     if (_isCustomInterval == false) {
       throw Exception('Cannot set start time for non-custom interval');
@@ -90,6 +112,11 @@ class GraphDataBuilder {
     return this;
   }
 
+  /// Sets the end time for custom interval graph data.
+  ///
+  /// @param endTime The end time to be set.
+  /// @return This builder instance for method chaining.
+  /// @throws Exception if not using a custom interval.
   GraphDataBuilder setEndTime(DateTime endTime) {
     if (_isCustomInterval == false) {
       throw Exception('Cannot set end time for non-custom interval');
@@ -99,21 +126,26 @@ class GraphDataBuilder {
     return this;
   }
 
+  /// Builds and returns the configured GraphData object.
+  ///
+  /// This method validates the configuration, retrieves data points,
+  /// processes them, and sets additional statistical information.
+  ///
+  /// @return A Future<GraphData> representing the built graph data.
+  /// @throws Exception for various configuration errors.
   Future<GraphData> build() async {
+    // Checking data initialization validity
     if (_graphData.dataType == null) {
       throw Exception('Data type must be set');
     }
-
     if (_isCustomInterval) {
       if (_graphData.startTime == null || _graphData.endTime == null) {
         throw Exception('Custom interval requires start and end time');
       }
     }
-
     if (_graphData.interval == null) {
       throw Exception('Graph Interval must be set');
     }
-
     if (_graphData.node == null) {
       throw Exception('Node must be set');
     }
@@ -129,6 +161,13 @@ class GraphDataBuilder {
     return _graphData;
   }
 
+  /// Retrieves data points from the database and processes them based on the configured interval.
+  ///
+  /// This method queries the database for relevant data points, averages them over
+  /// the specified intervals, and calculates various statistical measures (min, max, avg).
+  ///
+  /// @return A Future<List<Data>> containing the processed data points.
+  /// @throws Exception for invalid custom interval configurations.
   Future<List<Data>> _retrieveDataPointsFromDatabaseAndFilter() async {
     DataDao dataDao = DataDaoImpl();
 
@@ -138,7 +177,7 @@ class GraphDataBuilder {
     int endTime = _graphData.endTime?.millisecondsSinceEpoch ??
         DateTime.now().millisecondsSinceEpoch;
 
-    final dataPoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
+    final List<Data> dataPoints = await dataDao.getDataInTimeRangeByNodeIdAndDataTypeId(
         nodeId, dataTypeId, startTime, endTime);
 
     // Sorting the queried dataPoints
@@ -169,7 +208,7 @@ class GraphDataBuilder {
             .subtract(const Duration(days: 30))
             .millisecondsSinceEpoch;
         timeIncrements = const Duration(days: 1).inMilliseconds;
-        maxTimeValue = 31;
+        maxTimeValue = 30;
         break;
       case GraphInterval.Custom:
         if (_graphData.startTime == null) {
@@ -189,16 +228,35 @@ class GraphDataBuilder {
     }
 
     for (int i = 0; i < maxTimeValue; i++) {
-      Data? data = dataPoints.firstWhere(
-          (element) =>
-              element.timestamp >= timeStamp &&
-              element.timestamp < timeStamp + timeIncrements,
-          orElse: () => Data(
-              nodeId: _graphData.node!.id ?? -1,
-              dataTypeId: _graphData.dataType!.id,
-              value: 0,
-              timestamp: timeStamp));
-      newDataPoints.add(data);
+      List<Data> intervalDataPoints = dataPoints.where(
+            (element) =>
+        element.timestamp >= timeStamp &&
+            element.timestamp < timeStamp + timeIncrements,
+      ).toList();
+
+      if (intervalDataPoints.isNotEmpty) {
+        double averageValue = intervalDataPoints
+            .map((data) => data.value)
+            .reduce((a, b) => a + b) / intervalDataPoints.length;
+
+        Data averageData = Data(
+          nodeId: _graphData.node!.id ?? -1,
+          dataTypeId: _graphData.dataType!.id,
+          value: averageValue,
+          timestamp: timeStamp,
+        );
+
+        newDataPoints.add(averageData);
+      } else {
+        // If no data points in the interval, add a data point with value 0
+        newDataPoints.add(Data(
+          nodeId: _graphData.node!.id ?? -1,
+          dataTypeId: _graphData.dataType!.id,
+          value: 0,
+          timestamp: timeStamp,
+        ));
+      }
+
       timeStamp += timeIncrements;
     }
 
@@ -212,7 +270,7 @@ class GraphDataBuilder {
     int maxX = 0;
     int minX = 0;
 
-// Calculate maxY, minY, sumY, maxX, and minX in one loop
+    // Calculate maxY, minY, sumY, maxX, and minX in one loop
     for (Data data in dataPoints) {
       double value = data.value;
       int timestamp = data.timestamp;
@@ -237,11 +295,11 @@ class GraphDataBuilder {
       }
     }
 
-// Calculate avgY and avgX
+    // Calculate avgY and avgX
     double avgY = sumY / dataPoints.length;
     double avgX = (maxX + minX) / 2;
 
-// Set the values in _graphData
+    // Set the values in _graphData
     _graphData
       ..maxY = maxY
       ..minY = minY
@@ -253,6 +311,12 @@ class GraphDataBuilder {
     return dataPoints;
   }
 
+  /// Populates the database with random test data.
+  ///
+  /// This method is intended for development and testing purposes only.
+  /// It generates random data points for multiple data types and inserts them into the database.
+  ///
+  /// @deprecated Do not use this method in production.
   @Deprecated("Do not use this method in production")
   void _populateData() {
     DataDao dataDao = DataDaoImpl();

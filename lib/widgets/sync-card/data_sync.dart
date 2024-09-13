@@ -50,7 +50,7 @@ class DataSync {
     // Get the latest date from the app's database
     int? latestAppTimestamp = await dataDao.latestDataTimeStampOverall();
     DateTime latestAppDate = latestAppTimestamp != null
-        ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp)
+        ? DateTime.fromMillisecondsSinceEpoch(latestAppTimestamp).add(DateTime.now().timeZoneOffset)
         : DateTime.now().subtract(const Duration(days: 30)); // Use 30 days before the latest date
     print("Latest date from DB:$latestAppDate");
     onSyncStart();
@@ -123,11 +123,13 @@ class DataSync {
       double lux = double.tryParse(element[4]) ?? 0.0;
       double soil = double.tryParse(element[5]) ?? 0.0;
       int timestamp = int.tryParse(element[6]) ?? DateTime.now().millisecondsSinceEpoch;
+      int localTime  =  timestamp - DateTime.now().timeZoneOffset.inMilliseconds;
+      print(localTime);
 
-      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 1, value: temp, timestamp: timestamp));
-      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 2, value: hum, timestamp: timestamp));
-      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 3, value: lux, timestamp: timestamp));
-      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 4, value: soil, timestamp: timestamp));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 1, value: temp, timestamp: localTime));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 2, value: hum, timestamp: localTime));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 3, value: lux, timestamp: localTime));
+      await dataDao.insertData(Data(nodeId: nodeId, dataTypeId: 4, value: soil, timestamp: localTime));
     }
   }
 }
